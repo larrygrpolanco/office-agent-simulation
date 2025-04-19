@@ -1,6 +1,6 @@
 # Office Agent Simulation
 
-A modern port of the "Generative Agents" simulation system, focused on an office-themed environment. This project implements a single-server architecture using FastAPI for the backend, Phaser.js for the frontend, and WebSockets for real-time communication.
+A port of the "Interactive Simulacra of Human Behavior" simulation system, focused on an office-themed environment. This project implements a single-server architecture using FastAPI for the backend, Phaser.js for the frontend, and WebSockets for real-time communication.
 
 ## Overview
 
