@@ -1,116 +1,131 @@
-# Generative Agents Porting Guide
+# Office Agent Simulation
 
-This repository contains comprehensive guides for porting the Generative Agents human behavior simulation system from "The Ville" to your custom office simulation environment.
+A modern port of the "Generative Agents" simulation system, focused on an office-themed environment. This project implements a single-server architecture using FastAPI for the backend, Phaser.js for the frontend, and WebSockets for real-time communication.
 
 ## Overview
 
-The Generative Agents system is a sophisticated simulation of human behavior that combines:
+The Office Agent Simulation creates a virtual office environment populated by AI agents that exhibit believable behaviors, interactions, and cognitive processes. Based on the research paper "Generative Agents: Interactive Simulacra of Human Behavior," this project ports the original architecture to a more accessible, real-time system.
 
-- **Cognitive Architecture**: Agents with memory, planning, and reflection capabilities
-- **Spatial Reasoning**: Navigation and interaction with a virtual environment
-- **Social Dynamics**: Conversations and relationships between agents
-- **Visualization**: A frontend for observing and interacting with the simulation
+### Key Features
 
-Porting this system to an office environment involves understanding and adapting each of these components.
+- **AI Agents with Cognitive Architecture**: Agents follow a cognitive loop of perceive → retrieve → plan → execute → reflect
+- **Office Environment**: A virtual office setting with different areas and objects
+- **Real-Time Visualization**: Watch agents navigate and interact in real-time
+- **Extensible Framework**: Add new agents, behaviors, and environments
 
-## Guide Structure
+## Project Structure
 
-This repository contains three complementary guides:
+```
+office-agent-simulation/
+├── backend/                # Python FastAPI backend
+│   ├── app.py              # Main server entry point
+│   ├── maze.py             # Environment representation
+│   ├── path_finder.py      # Pathfinding algorithms
+│   └── persona/            # Agent architecture
+├── frontend/               # JavaScript/Phaser.js frontend
+│   ├── index.html          # Main HTML file
+│   ├── assets/             # Images, tilesets, etc.
+│   └── src/                # JavaScript source code
+├── memory-bank/            # Project documentation
+├── main.js                 # Electron entry point
+└── package.json            # Project configuration
+```
 
-### 1. [Map & Movement Porting Guide](Map_and_Movement_Porting_Guide.md)
+## Setup Instructions
 
-Focuses on the spatial aspects of the simulation:
+### Prerequisites
 
-- Understanding the dual representation of maps (TMX for frontend, CSVs for backend)
-- Creating a custom office map using Tiled Map Editor
-- Generating the necessary backend data files
-- Configuring the pathfinding system
-- Handling agent-object and agent-agent interactions
+- Node.js (v14+)
+- Python (v3.9+)
+- npm or yarn
 
-This guide is essential for creating the physical environment of your office simulation.
+### Installation
 
-### 2. [Frontend & Phaser.js Setup Guide](Frontend_and_Phaser_Setup_Guide.md)
+1. **Clone the repository**:
+   ```
+   git clone https://github.com/yourusername/office-agent-simulation.git
+   cd office-agent-simulation
+   ```
 
-Focuses on the visualization aspects:
+2. **Install dependencies**:
+   ```
+   # Install all dependencies (Node.js and Python)
+   npm run install:all
+   
+   # Or install separately:
+   npm install              # Root dependencies (Electron)
+   npm run install:frontend # Frontend dependencies
+   npm run install:backend  # Backend dependencies
+   ```
 
-- Setting up Phaser.js for rendering the office environment
-- Loading and configuring tilesets
-- Understanding the "pronunciatio" system (action emojis)
-- Implementing frontend-backend communication
-- Customizing the user interface
-- Optimizing performance
+3. **Set up environment variables**:
+   Create a `.env` file in the root directory with your API keys:
+   ```
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
 
-This guide is crucial for creating an engaging visual representation of your simulation.
+### Running the Application
 
-### 3. [Complete Porting Guide](Complete_Porting_Guide.md)
+#### Development Mode
 
-Provides a comprehensive roadmap that ties everything together:
+1. **Start the backend server**:
+   ```
+   npm run dev:backend
+   ```
 
-- System architecture overview
-- Step-by-step project roadmap
-- Map creation and representation
-- Backend and frontend setup
-- Agent cognition and behavior customization
-- Testing and debugging strategies
-- Advanced customization options
-- Deployment considerations
+2. **Start the frontend server** (in a separate terminal):
+   ```
+   npm run dev:frontend
+   ```
 
-This guide serves as the main reference for the entire porting process.
+3. **Access the application** at `http://localhost:3000`
 
-## Key Concepts Explained
+#### Electron App
 
-### The Dual-Representation Approach
+Run the complete application as an Electron desktop app:
+```
+npm start
+```
 
-The Generative Agents system uses two separate representations of the environment:
+### Building for Distribution
 
-1. **Frontend (Visual) Representation**: A TMX file created with Tiled Map Editor, loaded by Phaser.js for rendering
-2. **Backend (Logical) Representation**: A set of CSV matrices and legend files used by the Python backend for agent cognition and pathfinding
+Build the Electron app for distribution:
+```
+npm run build
+```
 
-This separation allows the backend to run headless for experiments while providing a visual interface when needed.
+This will create distributable packages in the `dist` directory.
 
-### The Agent Cognitive Loop
+## Development Workflow
 
-Agents follow a five-step cognitive loop:
+1. **Map Creation**:
+   - Use Tiled Map Editor to create office layouts
+   - Export as JSON for frontend and CSV for backend
 
-1. **Perceive**: Observe the environment and other agents
-2. **Retrieve**: Recall relevant memories
-3. **Plan**: Decide on actions based on perceptions and memories
-4. **Execute**: Translate plans into physical movements
-5. **Reflect**: Form higher-level thoughts about experiences
+2. **Agent Development**:
+   - Modify agent behaviors in `backend/persona/`
+   - Test with different personalities and goals
 
-This loop is implemented in the backend and drives agent behavior.
+3. **Frontend Customization**:
+   - Modify the UI in `frontend/index.html`
+   - Update game logic in `frontend/src/game.js`
 
-### The Pronunciatio System
+## Documentation
 
-"Pronunciatio" is the term used for the visual representation of an agent's current action, displayed as an emoji above the agent. The term comes from classical rhetoric, referring to the delivery or expression of a speech.
+Comprehensive documentation is available in the `memory-bank/` directory:
 
-## Getting Started
+- `projectbrief.md`: Project overview and goals
+- `productContext.md`: Why this project exists and user experience goals
+- `systemPatterns.md`: System architecture and design patterns
+- `techContext.md`: Technologies used and development setup
+- `activeContext.md`: Current work focus and next steps
+- `progress.md`: Project status and what's left to build
 
-1. Begin with the [Complete Porting Guide](Complete_Porting_Guide.md) to understand the overall process
-2. Refer to the [Map & Movement Porting Guide](Map_and_Movement_Porting_Guide.md) for detailed instructions on creating your office environment
-3. Use the [Frontend & Phaser.js Setup Guide](Frontend_and_Phaser_Setup_Guide.md) for implementing the visualization
+## License
 
-## Original System References
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-The original Generative Agents system is described in:
+## Acknowledgments
 
-- Park, J. S., O'Brien, J. C., Cai, C. J., Morris, M. R., Liang, P., & Bernstein, M. S. (2023). Generative Agents: Interactive Simulacra of Human Behavior. In Proceedings of the 36th Annual ACM Symposium on User Interface Software and Technology.
-
-The system consists of two main components:
-- A backend server (in the `reverie/` directory) that implements the agent cognitive architecture
-- A frontend server (in the `environment/frontend_server/` directory) that visualizes the simulation
-
-## Customization Tips
-
-When adapting the system to an office environment, consider:
-
-1. **Office-Specific Behaviors**: Meetings, desk work, coffee breaks, etc.
-2. **Professional Relationships**: Colleagues, managers, clients, etc.
-3. **Work Schedules**: 9-5 workday, lunch breaks, meetings, etc.
-4. **Office Layout**: Reception, meeting rooms, individual workspaces, break areas, etc.
-
-These aspects should be reflected in both the physical environment and the agent cognition.
-
----
-
-By following these guides, you can create a realistic simulation of human behavior in an office environment, enabling research, training, or entertainment applications.
+- Based on the research paper "Generative Agents: Interactive Simulacra of Human Behavior" by Park et al.
+- Inspired by "The Office" TV show for agent personalities and scenarios

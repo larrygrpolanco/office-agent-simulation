@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Agent Simulation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        #game-container {
+            flex: 1;
+            background-color: #222;
+            position: relative;
+        }
+        #ui-panel {
+            width: 300px;
+            background-color: #f8f8f8;
+            padding: 15px;
+            overflow-y: auto;
+            box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+        }
+        .agent-card {
+            background-color: white;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .agent-card h3 {
+            margin-top: 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        .status-bar {
+            background-color: #444;
+            color: white;
+            padding: 5px 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Office Agent Simulation</h1>
+        <div id="simulation-controls">
+            <button id="start-btn">Start</button>
+            <button id="pause-btn">Pause</button>
+            <button id="reset-btn">Reset</button>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div id="game-container">
+            <!-- Phaser will render here -->
+        </div>
+        
+        <div id="ui-panel">
+            <h2>Simulation Info</h2>
+            <div class="info-box">
+                <p><strong>Time:</strong> <span id="game-time-content">Loading...</span></p>
+                <p><strong>Working Hours:</strong> <span id="working-hours">9:00 AM - 5:00 PM</span></p>
+            </div>
+            
+            <h2>Agents</h2>
+            <div id="agents-container">
+                <!-- Agent cards will be added here dynamically -->
+                <div class="agent-card" id="agent-Michael">
+                    <h3>Michael Scott</h3>
+                    <p><strong>Role:</strong> Regional Manager</p>
+                    <p><strong>Current Task:</strong> <span class="agent-task">Loading...</span></p>
+                    <p><strong>Location:</strong> <span class="agent-location">Loading...</span></p>
+                </div>
+                
+                <div class="agent-card" id="agent-Jim">
+                    <h3>Jim Halpert</h3>
+                    <p><strong>Role:</strong> Sales Representative</p>
+                    <p><strong>Current Task:</strong> <span class="agent-task">Loading...</span></p>
+                    <p><strong>Location:</strong> <span class="agent-location">Loading...</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="status-bar">
+        <div id="status-message">Ready to start simulation</div>
+        <div id="fps-counter">FPS: --</div>
+    </div>
+
+    <!-- Load Phaser -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    
+    <!-- Load our game code -->
+    <script src="src/game.js"></script>
+</body>
+</html>

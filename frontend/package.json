@@ -1,0 +1,16 @@
+{
+  "name": "office-agent-simulation-frontend",
+  "version": "0.1.0",
+  "description": "Frontend for the Office Agent Simulation",
+  "main": "index.html",
+  "scripts": {
+    "start": "http-server -p 3000",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "phaser": "^3.55.2"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

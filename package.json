@@ -1,0 +1,62 @@
+{
+  "name": "office-agent-simulation",
+  "version": "0.1.0",
+  "description": "Office Agent Simulation - A port of the Generative Agents system",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev:backend": "cd backend && python app.py",
+    "dev:frontend": "cd frontend && npx http-server -p 3000",
+    "install:backend": "pip install -r backend/requirements.txt",
+    "install:frontend": "cd frontend && npm install",
+    "install:all": "npm install && npm run install:frontend && npm run install:backend",
+    "build": "electron-builder",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "electron": "^13.0.0"
+  },
+  "devDependencies": {
+    "electron-builder": "^22.11.7"
+  },
+  "build": {
+    "appId": "com.example.office-agent-simulation",
+    "productName": "Office Agent Simulation",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "backend/**/*",
+      "frontend/**/*",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+      "!**/node_modules/*.d.ts",
+      "!**/node_modules/.bin",
+      "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+      "!.editorconfig",
+      "!**/._*",
+      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
+      "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
+      "!**/{appveyor.yml,.travis.yml,circle.yml}",
+      "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
+    ],
+    "extraResources": [
+      {
+        "from": "frontend/assets",
+        "to": "assets"
+      }
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  }
+}
