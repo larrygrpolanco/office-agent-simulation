@@ -54,7 +54,7 @@ This guide details how to port the map representation and agent movement system 
   - `Collision_Layer`
   - `Sector_Layer`
   - `Arena_Layer`
-  - `GameObject_Layer`
+  - `Object_Interaction_Layer`
   - `Spawning_Layer`
 
 ---
