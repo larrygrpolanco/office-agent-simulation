@@ -1,6 +1,6 @@
 # Office Agent Simulation
 
-A port of the "Interactive Simulacra of Human Behavior" simulation system, focused on an office-themed environment. This project implements a single-server architecture using FastAPI for the backend, Phaser.js for the frontend, and WebSockets for real-time communication.
+An adaptation of the "Generative Agents: Interactive Simulacra of Human Behavior" by Park et al. simulation system, focused on an office-themed environment. This project implements a single-server architecture using FastAPI for the backend, Phaser.js for the frontend, and WebSockets for real-time communication.
 
 ## Overview
 
@@ -31,70 +31,6 @@ office-agent-simulation/
 └── package.json            # Project configuration
 ```
 
-## Setup Instructions
-
-### Prerequisites
-
-- Node.js (v14+)
-- Python (v3.9+)
-- npm or yarn
-
-### Installation
-
-1. **Clone the repository**:
-   ```
-   git clone https://github.com/yourusername/office-agent-simulation.git
-   cd office-agent-simulation
-   ```
-
-2. **Install dependencies**:
-   ```
-   # Install all dependencies (Node.js and Python)
-   npm run install:all
-   
-   # Or install separately:
-   npm install              # Root dependencies (Electron)
-   npm run install:frontend # Frontend dependencies
-   npm run install:backend  # Backend dependencies
-   ```
-
-3. **Set up environment variables**:
-   Create a `.env` file in the root directory with your API keys:
-   ```
-   OPENAI_API_KEY=your_openai_api_key_here
-   ```
-
-### Running the Application
-
-#### Development Mode
-
-1. **Start the backend server**:
-   ```
-   npm run dev:backend
-   ```
-
-2. **Start the frontend server** (in a separate terminal):
-   ```
-   npm run dev:frontend
-   ```
-
-3. **Access the application** at `http://localhost:3000`
-
-#### Electron App
-
-Run the complete application as an Electron desktop app:
-```
-npm start
-```
-
-### Building for Distribution
-
-Build the Electron app for distribution:
-```
-npm run build
-```
-
-This will create distributable packages in the `dist` directory.
 
 ## Development Workflow
 
