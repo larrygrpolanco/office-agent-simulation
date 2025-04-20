@@ -9,11 +9,12 @@ This guide details how to port the map representation and agent movement system 
 1. [Overview: Map & Movement Architecture](#1-overview-map--movement-architecture)
 2. [Map Creation in Tiled](#2-map-creation-in-tiled)
 3. [Exporting Map Data for Backend & Frontend](#3-exporting-map-data-for-backend--frontend)
-4. [Backend Integration (FastAPI)](#4-backend-integration-fastapi)
-5. [Frontend Integration (Phaser.js)](#5-frontend-integration-phaserjs)
-6. [Agent Movement & Pathfinding](#6-agent-movement--pathfinding)
-7. [Testing & Debugging](#7-testing--debugging)
-8. [Common Issues & Solutions](#8-common-issues--solutions)
+4. [Environmental Hierarchy & Special Blocks CSVs](#4-environmental-hierarchy--special-blocks-csvs)
+5. [Backend Integration (FastAPI)](#5-backend-integration-fastapi)
+6. [Frontend Integration (Phaser.js)](#6-frontend-integration-phaserjs)
+7. [Agent Movement & Pathfinding](#7-agent-movement--pathfinding)
+8. [Testing & Debugging](#8-testing--debugging)
+9. [Common Issues & Solutions](#9-common-issues--solutions)
 
 ---
 
@@ -114,7 +115,96 @@ assets/
 
 ---
 
-## 4. Backend Integration (FastAPI)
+## 4. Environmental Hierarchy & Special Blocks CSVs
+
+### Why Use a Hierarchical (Tree) Structure?
+
+- **Believability:** Agents can reason about locations at multiple levels (e.g., "The Office > Kitchen > Coffee Machine").
+- **Memory:** Agents can store and recall events with context ("I saw Jim at the water cooler in the kitchen").
+- **Navigation:** The backend can resolve high-level goals to specific tiles and objects.
+- **Extensibility:** The same structure works for both small and large maps.
+
+### CSV Structure
+
+Each row in a special_blocks CSV should start with the GID, then world, sector, arena, and finally object (if applicable).
+
+#### Example: arena_blocks.csv
+```
+0,The Office, Open Workspace, Desk Cluster A
+0,The Office, Open Workspace, Desk Cluster B
+0,The Office, Reception, Reception Waiting Area
+0,The Office, Kitchen, Kitchenette
+0,The Office, Supplies Closet, Storage Nook
+0,The Office, Open Workspace, Copy Area
+0,The Office, Regional Manager Office, Regional Manager Desk
+0,The Office, Reception, Reception Desk
+0,The Office, Forman Office, Forman Desk
+0,The Office, Kitchen Closet, Closet Desk
+```
+
+#### Example: game_object_blocks.csv
+```
+0,The Office, Regional Manager Office, , Regional Manager Desk
+0,The Office, Reception, , Reception Desk
+0,The Office, Open Workspace, Desk Cluster A, Assistant’s Desk
+0,The Office, Open Workspace, Desk Cluster A, Accountant Desk
+0,The Office, Open Workspace, Desk Cluster B, Office Administrator Desk
+0,The Office, Open Workspace, Desk Cluster B, Sales Rep Desk
+0,The Office, Open Workspace, Desk Cluster B, HR Rep Desk
+0,The Office, Forman Office, , Forman Desk
+0,The Office, Kitchen Closet, , Closet Desk
+0,The Office, Conference Room, , Conference Table
+0,The Office, Kitchen, Kitchenette, Coffee Machine
+0,The Office, Kitchen, Kitchenette, Fridge
+0,The Office, Kitchen, Kitchenette, Microwave
+0,The Office, Open Workspace, Copy Area, Printer
+0,The Office, Open Workspace, Copy Area, Copy Machine
+0,The Office, Open Workspace, , Water Cooler
+0,The Office, Break Room, , Vending Machine
+0,The Office, Conference Room, , Whiteboard
+0,The Office, Supplies Closet, Storage Nook, File Cabinet
+0,The Office, Supplies Closet, Storage Nook, Supply Shelf
+```
+
+#### Example: sector_blocks.csv
+```
+0,The Office, Open Workspace
+0,The Office, Conference Room
+0,The Office, Regional Manager Office
+0,The Office, Reception
+0,The Office, Kitchen
+0,The Office, Break Room
+0,The Office, Bathroom
+0,The Office, Kitchen Closet
+0,The Office, Supplies Closet
+0,The Office, Forman Office
+```
+
+#### Example: spawning_location_blocks.csv
+```
+0,The Office, Reception, , Reception Spawn
+0,The Office, Regional Manager Office, , Manager Office Spawn
+0,The Office, Conference Room, , Conference Room Spawn
+0,The Office, Kitchen, , Kitchen Spawn
+0,The Office, Open Workspace, Desk Cluster A, Desk Cluster A Spawn
+0,The Office, Open Workspace, Desk Cluster B, Desk Cluster B Spawn
+```
+
+### When to Use `<all>`
+
+- Use `<all>` only if you want agents to treat all instances of an object as equivalent, regardless of location (e.g., "bed" in a large simulation with many bedrooms).
+- For small, detailed maps, **specific is better** for realism and agent reasoning.
+
+### Best Practices
+
+- Always use the full hierarchy: world, sector, arena, object (as needed).
+- Be consistent, even if your map is small.
+- Use clear, generic names for roles and areas, but nest them in the hierarchy.
+- Update your CSVs as you add new areas or objects.
+
+---
+
+## 5. Backend Integration (FastAPI)
 
 ### Step 1: Load Map Data
 
@@ -140,7 +230,7 @@ assets/
 
 ---
 
-## 5. Frontend Integration (Phaser.js)
+## 6. Frontend Integration (Phaser.js)
 
 ### Step 1: Load Map and Tilesets
 
@@ -159,7 +249,7 @@ assets/
 
 ---
 
-## 6. Agent Movement & Pathfinding
+## 7. Agent Movement & Pathfinding
 
 ### Movement Flow
 
@@ -183,7 +273,7 @@ assets/
 
 ---
 
-## 7. Testing & Debugging
+## 8. Testing & Debugging
 
 - **Backend:**  
   - Add logging to pathfinding and movement logic.
@@ -194,7 +284,7 @@ assets/
 
 ---
 
-## 8. Common Issues & Solutions
+## 9. Common Issues & Solutions
 
 - **Agents Walking Through Walls:**  
   - Check `collision_maze.csv` and ensure all obstacles are marked.
@@ -214,5 +304,10 @@ assets/
 - [Frontend_and_Phaser_Setup_Guide.md](Frontend_and_Phaser_Setup_Guide.md): Frontend setup details
 
 ---
+
+**Lessons Learned:**
+- Use a hierarchical structure in your special_blocks CSVs for maximum agent believability and extensibility.
+- Be specific in your environmental labeling for small maps; use `<all>` only for generic, repeated objects in large maps.
+- Keep your documentation and CSVs up to date as you iterate on your simulation.
 
 This guide should help you port the map and movement system for your Generative Agents simulation using FastAPI and Phaser.js, with a focus on real-time, single-server architecture and maintainable data flow.

@@ -9,13 +9,13 @@
 | Project Structure | ✅ Complete | Directory structure created |
 | Backend Skeleton | ✅ Complete | Basic FastAPI app with WebSocket endpoint |
 | Frontend Skeleton | ✅ Complete | Basic Phaser.js setup with placeholder map |
-| Map Creation | 🔄 Pending | Office map to be designed |
+| Map Creation | ✅ Complete | Office map and environmental matrix finalized with hierarchical labeling |
 | Agent Architecture Port | 🔄 Pending | Agent cognitive loop to be ported |
 | WebSocket Communication | 🟡 Partial | Basic structure implemented, needs real data |
 | Agent Behaviors | 🔄 Pending | Office-specific behaviors to be defined |
 | Electron Packaging | 🟡 Partial | Basic setup complete, needs testing |
 
-**Overall Project Status**: 📋 Planning Phase
+**Overall Project Status**: 🟢 Core environment and documentation complete; agent logic and behaviors next.
 
 ## What Works
 
@@ -27,6 +27,8 @@
 - ✅ Basic FastAPI backend with WebSocket endpoint
 - ✅ Basic Phaser.js frontend with placeholder visualization
 - ✅ Electron configuration for desktop packaging
+- ✅ Office map and all special_blocks CSVs use a hierarchical, context-rich structure
+- ✅ Documentation and guides updated to reflect new best practices
 
 ## What's Left to Build
 
@@ -39,7 +41,7 @@
 - [ ] Port environment representation (`maze.py`)
 - [ ] Port pathfinding (`path_finder.py`)
 - [x] Create WebSocket communication skeleton
-- [ ] Create basic office map
+- [x] Create basic office map and environmental matrix
 - [x] Implement placeholder map rendering in Phaser.js
 - [x] Create placeholder agent visualization
 - [x] Implement basic movement visualization
@@ -129,6 +131,11 @@
    - **Rationale**: Familiar context, well-defined behaviors, entertaining
    - **Status**: Maintained
 
+5. **Hierarchical Environmental Matrix**:
+   - **Decision**: Use a tree structure in all special_blocks CSVs for maximum agent context, memory, and extensibility
+   - **Rationale**: Supports agent believability, navigation, and future extensibility
+   - **Status**: Adopted
+
 ### Future Decision Points
 
 1. **LLM Integration Strategy**:
@@ -150,7 +157,9 @@
 
 ## Lessons Learned
 
-*To be populated as development progresses.*
+- **Hierarchical labeling in special_blocks CSVs is essential** for agent believability, memory, and extensibility.
+- **Specific context is better for small maps**; use `<all>` only for generic, repeated objects in large environments.
+- **Documentation-driven development** ensures the porting process can be repeated and improved for future projects.
 
 ## Next Major Focus
 
@@ -158,8 +167,8 @@ The next major focus is porting the core agent architecture and implementing the
 
 1. Porting the agent cognitive loop and memory systems
 2. Implementing the environment representation (maze.py)
-3. Creating a proper office map with Tiled Map Editor
-4. Connecting the frontend and backend with real data instead of placeholders
+3. Connecting the frontend and backend with real data instead of placeholders
+4. Leveraging the new environmental matrix for advanced agent behaviors
 
 ## Success Metrics Progress
 
@@ -168,4 +177,4 @@ The next major focus is porting the core agent architecture and implementing the
 | Agents navigate environment | Beta Phase 1 | 🟡 Placeholder Implemented |
 | Basic office behaviors | Beta Phase 2 | 🔄 Not Started |
 | Smooth real-time simulation | Beta Phase 2 | 🟡 Basic Structure Ready |
-| Well-documented for extension | Ongoing | ✅ Good Progress |
+| Well-documented for extension | Ongoing | ✅ Excellent Progress |

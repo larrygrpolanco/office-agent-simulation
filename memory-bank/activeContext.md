@@ -27,33 +27,38 @@ We are currently in the **initial implementation phase** of the Office Agent Sim
 ### Immediate Tasks (Beta Phase 1)
 
 1. **Port core agent architecture**:
+
    - Port `persona.py` and cognitive modules
    - Port memory systems (associative, spatial, scratch)
    - Adapt to use LLM API for agent cognition
 
 2. **Implement environment representation**:
+
    - Port `maze.py` for office environment
    - Implement tile-based world representation
    - Add collision detection and event handling
 
 3. **Create proper office map**:
+
    - Design detailed office layout in Tiled
    - Export map data for frontend (JSON) and backend (CSV)
    - Implement map loading in both systems
 
 4. **Connect frontend and backend**:
    - Replace mock data with real agent decisions
-   - Implement proper WebSocket data exchange
-   - Test with simple agent behaviors
+   - Create agent sprites and animations
+   - Implement basic movement visualization
 
 ### Medium-Term Tasks (Beta Phase 2)
 
 1. **Refine agent behaviors**:
+
    - Implement office-specific behaviors
    - Create agent roles and personalities
    - Improve agent decision-making
 
 2. **Enhance visualization**:
+
    - Add pronunciatio system (emojis/status indicators)
    - Improve animations and visual feedback
    - Add basic UI elements for simulation control
@@ -85,20 +90,23 @@ We are currently in the **initial implementation phase** of the Office Agent Sim
 
 ### Open Questions
 
-1. **LLM Integration Strategy**: 
+1. **LLM Integration Strategy**:
+
    - How to efficiently use LLM API calls for agent cognition?
    - Should we batch process agent decisions or process them individually?
    - How to handle API rate limits and costs?
 
-2. **Map Complexity**: 
+2. **Map Complexity**:
+
    - How detailed should the office map be for the beta version?
    - What office areas and objects are essential for basic functionality?
 
-3. **Agent Behavior Scope**: 
+3. **Agent Behavior Scope**:
+
    - What office behaviors should be implemented first?
    - How to balance realism with performance?
 
-4. **UI Requirements**: 
+4. **UI Requirements**:
    - What minimal UI elements are needed for the beta version?
    - When should we integrate React for more advanced UI?
 
@@ -119,6 +127,7 @@ We are currently in the **initial implementation phase** of the Office Agent Sim
 ### Naming Conventions
 
 - **Backend (Python)**:
+
   - snake_case for variables and functions
   - CamelCase for classes
   - Descriptive names that reflect purpose

@@ -160,6 +160,42 @@ This pattern allows for:
 - Comparing different approaches
 - Keeping the frontend and communication system unchanged
 
+---
+
+## Environmental Matrix & Hierarchical Labeling Pattern
+
+### Rationale
+
+- **Hierarchical (tree) labeling** in special_blocks CSVs (world, sector, arena, object) enables agents to reason about, remember, and navigate the environment at multiple levels of detail.
+- This structure supports address resolution, contextual memory, and extensibility for both small and large maps.
+
+### Implementation
+
+- All legend files (arena_blocks.csv, game_object_blocks.csv, etc.) use the format: GID, world, sector, arena, object (as needed).
+- For small, detailed maps, always use specific context (avoid `<all>` unless you have many generic, repeated objects).
+- Example:
+  ```
+  0,The Office, Kitchen, Kitchenette, Coffee Machine
+  0,The Office, Open Workspace, Desk Cluster A, Assistant’s Desk
+  0,The Office, Reception, , Reception Desk
+  ```
+
+### Impact on Agent Architecture
+
+- **Spatial Memory**: Agents can form memories and plans at any level of the hierarchy.
+- **Navigation**: The backend can resolve high-level goals (e.g., "go to the kitchen") to specific tiles.
+- **Interaction**: Agents can interact with objects in context (e.g., "use the coffee machine in the kitchen").
+- **Extensibility**: New areas and objects can be added by simply extending the CSVs with new hierarchical rows.
+
+### Best Practices
+
+- Always use the full hierarchy for labeling, even in small maps.
+- Be consistent and clear in naming.
+- Update documentation and legend files as the environment evolves.
+- Use `<all>` only for truly generic objects in large, repetitive environments.
+
+---
+
 ## Critical Implementation Paths
 
 ### 1. Agent Cognitive Loop Implementation
@@ -253,6 +289,8 @@ This ensures maintaining the core agent believability while adapting the system 
 6. **FastAPI for Backend**: Offers modern async support and WebSocket capabilities.
 
 7. **Tiled Map Editor**: Industry-standard tool for creating and editing game maps.
+
+8. **Hierarchical Environmental Matrix**: Use a tree structure in all special_blocks CSVs for maximum agent context, memory, and extensibility.
 
 ## Future Architectural Considerations
 
