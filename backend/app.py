@@ -17,8 +17,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
-# Import simulation components (to be implemented)
-# from maze import Maze
+from backend.maze import Maze
 # from path_finder import path_finder
 # from persona.persona import Persona
 
@@ -44,67 +43,44 @@ app.mount("/static", StaticFiles(directory="../frontend"), name="static")
 # Simulation state
 class SimulationState:
     def __init__(self, maze_name: str = "office"):
-        # Initialize simulation state
-        # self.maze = Maze(maze_name)  # Uncomment when implemented
-        self.maze = None  # Placeholder
-        self.personas = {}  # name -> Persona
-        self.personas_tile = {}  # name -> (x, y)
+        # Set the path to the office map/matrix
+        env_matrix = "frontend/assets/the_office/matrix"
+        self.maze = Maze(maze_name, env_matrix)
+        self.personas = {}  # name -> Persona (placeholder for now)
+        self.personas_tile = {
+            "Alice": (0, 3),
+            "Bob": (1, 3)
+        }
         self.step = 0
         self.curr_time = datetime.datetime.now()
         self.sec_per_step = 60  # 1 minute per step
-        
-        # Initialize personas (placeholder)
-        # self.init_personas()
-    
-    def init_personas(self):
-        """Initialize personas with their starting positions"""
-        # Example: Create a few personas
-        persona_configs = [
-            {"name": "Michael Scott", "position": (10, 15)},
-            {"name": "Jim Halpert", "position": (12, 18)},
-            {"name": "Pam Beesly", "position": (15, 18)},
-            {"name": "Dwight Schrute", "position": (8, 12)}
-        ]
-        
-        # Placeholder - will be implemented later
-        pass
-    
+
     def process_environment(self, env_data: Dict[str, Dict[str, int]]) -> Dict[str, Any]:
         """
         Process the environment data from the frontend and generate movements
-        
+
         Args:
             env_data: Dictionary mapping persona names to their positions
-                      e.g., {"Michael Scott": {"x": 10, "y": 15}}
-        
+                      e.g., {"Alice": {"x": 0, "y": 3}, "Bob": {"x": 1, "y": 3}}
+
         Returns:
             Dictionary with movement instructions for each persona
         """
-        # Placeholder implementation - returns mock data
-        movements = {
-            "persona": {
-                "Michael Scott": {
-                    "movement": [11, 15],
-                    "pronunciatio": "📋",
-                    "description": "reviewing quarterly reports @ office:manager_office:desk",
-                    "chat": None
-                },
-                "Jim Halpert": {
-                    "movement": [13, 18],
-                    "pronunciatio": "💻",
-                    "description": "working on sales report @ office:sales_area:desk",
-                    "chat": None
-                }
-            },
-            "meta": {
-                "curr_time": self.curr_time.strftime("%B %d, %Y, %H:%M:%S")
+        # For now, move Alice and Bob one tile to the right each step (demo logic)
+        movements = {"persona": {}, "meta": {}}
+        for name, pos in self.personas_tile.items():
+            new_x = pos[0] + 1 if pos[0] + 1 < self.maze.maze_width else pos[0]
+            new_y = pos[1]
+            self.personas_tile[name] = (new_x, new_y)
+            movements["persona"][name] = {
+                "movement": [new_x, new_y],
+                "pronunciatio": "💼" if name == "Alice" else "🗂️",
+                "description": f"{name} is walking in the office.",
+                "chat": None
             }
-        }
-        
-        # Update simulation state
+        movements["meta"]["curr_time"] = self.curr_time.strftime("%B %d, %Y, %H:%M:%S")
         self.step += 1
         self.curr_time += datetime.timedelta(seconds=self.sec_per_step)
-        
         return movements
 
 # Create simulation state
