@@ -12,8 +12,8 @@ import pickle
 import time
 import math
 
-from backend.global_methods import *
-# from utils import *  # Not present, assumed not needed
+from .global_methods import *
+from .utils import *
 
 class Maze: 
   def __init__(self, maze_name, env_matrix): 

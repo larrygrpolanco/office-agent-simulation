@@ -2,20 +2,20 @@
 
 ## Current Status
 
-| Component | Status | Notes |
-|-----------|--------|-------|
-| Project Planning | ✅ Complete | Initial planning and architecture review complete |
-| Memory Bank Setup | ✅ Complete | Core documentation files created |
-| Project Structure | ✅ Complete | Directory structure created |
-| Backend Skeleton | ✅ Complete | Basic FastAPI app with WebSocket endpoint |
-| Frontend Skeleton | ✅ Complete | Basic Phaser.js setup with placeholder map |
-| Map Creation | ✅ Complete | Office map and environmental matrix finalized with hierarchical labeling |
-| Agent Architecture Port | 🔄 Pending | Agent cognitive loop to be ported |
-| WebSocket Communication | 🟡 Partial | Basic structure implemented, needs real data |
-| Agent Behaviors | 🔄 Pending | Office-specific behaviors to be defined |
-| Electron Packaging | 🟡 Partial | Basic setup complete, needs testing |
+| Component                | Status     | Notes                                                        |
+|--------------------------|------------|--------------------------------------------------------------|
+| Project Planning         | ✅ Complete| Initial planning and architecture review complete            |
+| Memory Bank Setup        | ✅ Complete| Core documentation files created                             |
+| Project Structure        | ✅ Complete| Directory structure created                                  |
+| Backend Skeleton         | ✅ Complete| Basic FastAPI app with WebSocket endpoint                    |
+| Frontend Skeleton        | ✅ Complete| Basic Phaser.js setup with placeholder map                   |
+| Map Creation             | ✅ Complete| Office map and environmental matrix finalized                |
+| Agent Architecture Port  | ✅ Complete| Persona class, cognitive modules, and memory systems ported  |
+| WebSocket Communication  | 🟡 Partial | Basic structure implemented, needs real agent data           |
+| Agent Behaviors          | 🔄 Pending | Office-specific behaviors to be defined                      |
+| Electron Packaging       | 🟡 Partial | Basic setup complete, needs testing                          |
 
-**Overall Project Status**: 🟢 Core environment and documentation complete; agent logic and behaviors next.
+**Overall Project Status**: 🟢 Core environment and documentation complete; agent logic ready for integration.
 
 ## What Works
 
@@ -24,6 +24,7 @@
 - ✅ Porting strategy identified
 - ✅ Original codebase reviewed and understood
 - ✅ Project structure and skeleton code created
+- ✅ Persona class, cognitive modules, and memory systems ported to backend
 - ✅ Basic FastAPI backend with WebSocket endpoint
 - ✅ Basic Phaser.js frontend with placeholder visualization
 - ✅ Electron configuration for desktop packaging
@@ -36,9 +37,10 @@
 
 - [x] Backend directory structure
 - [x] Frontend directory structure
-- [ ] Port `persona.py` and cognitive modules
-- [ ] Port memory systems
-- [ ] Port environment representation (`maze.py`)
+- [x] Port `persona.py` and cognitive modules
+- [x] Port memory systems
+- [x] Port environment representation (`maze.py`)
+- [ ] Integrate Persona agents into simulation loop (replace placeholder logic)
 - [ ] Port pathfinding (`path_finder.py`)
 - [x] Create WebSocket communication skeleton
 - [x] Create basic office map and environmental matrix
@@ -94,18 +96,18 @@
 
 ## Milestones & Timeline
 
-| Milestone | Target | Status |
-|-----------|--------|--------|
-| Project Planning | Week 1 | ✅ Complete |
-| Memory Bank Setup | Week 1 | ✅ Complete |
-| Project Structure | Week 1 | ✅ Complete |
-| Backend Port | Weeks 2-3 | 🔄 In Progress |
-| Frontend Setup | Weeks 2-3 | 🔄 In Progress |
-| WebSocket Integration | Week 4 | 🟡 Partial |
-| Basic Simulation Working | Week 5 | 🔄 Pending |
-| Agent Behaviors | Weeks 6-7 | 🔄 Pending |
-| UI Improvements | Weeks 8-9 | 🔄 Pending |
-| Electron Packaging | Week 10 | 🟡 Partial |
+| Milestone                  | Target   | Status     |
+|----------------------------|----------|------------|
+| Project Planning           | Week 1   | ✅ Complete|
+| Memory Bank Setup          | Week 1   | ✅ Complete|
+| Project Structure          | Week 1   | ✅ Complete|
+| Backend Port               | Weeks 2-3| ✅ Complete|
+| Frontend Setup             | Weeks 2-3| 🔄 In Progress|
+| WebSocket Integration      | Week 4   | 🟡 Partial |
+| Basic Simulation Working   | Week 5   | 🔄 Pending |
+| Agent Behaviors            | Weeks 6-7| 🔄 Pending |
+| UI Improvements            | Weeks 8-9| 🔄 Pending |
+| Electron Packaging         | Week 10  | 🟡 Partial |
 
 ## Evolution of Project Decisions
 
@@ -163,18 +165,18 @@
 
 ## Next Major Focus
 
-The next major focus is porting the core agent architecture and implementing the actual simulation logic. This includes:
+The next major focus is integrating the Persona agent cognitive loop into the FastAPI backend simulation loop. This includes:
 
-1. Porting the agent cognitive loop and memory systems
-2. Implementing the environment representation (maze.py)
-3. Connecting the frontend and backend with real data instead of placeholders
+1. Instantiating Persona agents in the backend simulation state
+2. Updating process_environment to use persona.move(...) for agent actions
+3. Connecting the frontend and backend with real agent-driven data
 4. Leveraging the new environmental matrix for advanced agent behaviors
 
 ## Success Metrics Progress
 
-| Success Metric | Target | Current Status |
-|----------------|--------|----------------|
-| Agents navigate environment | Beta Phase 1 | 🟡 Placeholder Implemented |
-| Basic office behaviors | Beta Phase 2 | 🔄 Not Started |
-| Smooth real-time simulation | Beta Phase 2 | 🟡 Basic Structure Ready |
-| Well-documented for extension | Ongoing | ✅ Excellent Progress |
+| Success Metric                | Target        | Current Status                |
+|-------------------------------|--------------|-------------------------------|
+| Agents navigate environment   | Beta Phase 1 | 🟡 Placeholder Implemented     |
+| Basic office behaviors        | Beta Phase 2 | 🔄 Not Started                |
+| Smooth real-time simulation   | Beta Phase 2 | 🟡 Basic Structure Ready       |
+| Well-documented for extension | Ongoing      | ✅ Excellent Progress          |

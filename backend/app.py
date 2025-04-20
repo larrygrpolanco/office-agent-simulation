@@ -17,9 +17,8 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
-from maze import Maze
-# from path_finder import path_finder
-# from persona.persona import Persona
+from .maze import Maze
+from .persona.persona import Persona
 
 # Create FastAPI app
 app = FastAPI(
@@ -46,7 +45,11 @@ class SimulationState:
         # Set the path to the office map/matrix
         env_matrix = "frontend/assets/the_office/matrix"
         self.maze = Maze(maze_name, env_matrix)
-        self.personas = {}  # name -> Persona (placeholder for now)
+        # Initialize Persona agents
+        self.personas = {
+            "Alice": Persona("Alice"),
+            "Bob": Persona("Bob")
+        }
         self.personas_tile = {
             "Alice": (0, 3),
             "Bob": (1, 3)
@@ -66,17 +69,28 @@ class SimulationState:
         Returns:
             Dictionary with movement instructions for each persona
         """
-        # For now, move Alice and Bob one tile to the right each step (demo logic)
         movements = {"persona": {}, "meta": {}}
-        for name, pos in self.personas_tile.items():
-            new_x = pos[0] + 1 if pos[0] + 1 < self.maze.maze_width else pos[0]
-            new_y = pos[1]
-            self.personas_tile[name] = (new_x, new_y)
+        for name, persona in self.personas.items():
+            # 1. Update position from env_data
+            if name in env_data:
+                curr_tile = (env_data[name]["x"], env_data[name]["y"])
+                prev_tile = self.personas_tile[name]
+                self.personas_tile[name] = curr_tile
+                # 2. Update Maze
+                self.maze.remove_subject_events_from_tile(persona.name, prev_tile)
+                self.maze.add_event_from_tile(persona.scratch.get_curr_event_and_desc(), curr_tile)
+            else:
+                curr_tile = self.personas_tile[name]
+            # 3. Run cognitive loop
+            next_tile, pronunciatio, description = persona.move(
+                self.maze, self.personas, curr_tile, self.curr_time
+            )
+            self.personas_tile[name] = next_tile
             movements["persona"][name] = {
-                "movement": [new_x, new_y],
-                "pronunciatio": "💼" if name == "Alice" else "🗂️",
-                "description": f"{name} is walking in the office.",
-                "chat": None
+                "movement": list(next_tile),
+                "pronunciatio": pronunciatio,
+                "description": description,
+                "chat": getattr(persona.scratch, "chat", None)
             }
         movements["meta"]["curr_time"] = self.curr_time.strftime("%B %d, %Y, %H:%M:%S")
         self.step += 1
