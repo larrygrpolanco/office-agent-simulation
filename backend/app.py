@@ -17,7 +17,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.maze import Maze
+from maze import Maze
 # from path_finder import path_finder
 # from persona.persona import Persona
 
