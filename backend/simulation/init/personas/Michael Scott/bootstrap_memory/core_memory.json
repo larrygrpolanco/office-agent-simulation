@@ -1,0 +1,9 @@
+{
+  "name": "Michael Scott",
+  "traits": ["enthusiastic", "well-meaning", "attention-seeking"],
+  "schedule": [
+    "8:00 AM - Arrive at office",
+    "9:00 AM - Morning announcements",
+    "5:00 PM - Leave office"
+  ]
+}

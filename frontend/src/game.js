@@ -330,10 +330,15 @@ function connectWebSocket() {
   };
 
   // Message received
-  socket.onmessage = function (event) {
-    const movements = JSON.parse(event.data);
-    updateAgents(movements);
-  };
+socket.onmessage = function (event) {
+    let movements;
+    try {
+        movements = JSON.parse(event.data);
+        updateAgents(movements);
+    } catch (e) {
+        console.error('Invalid JSON from server:', event.data);
+    }
+};
 }
 
 // Send current environment state to backend
