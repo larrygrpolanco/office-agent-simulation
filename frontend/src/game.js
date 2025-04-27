@@ -331,12 +331,26 @@ function connectWebSocket() {
 
   // Message received
 socket.onmessage = function (event) {
-    let movements;
+    // Handle plain text connection confirmation
+    if (event.data === "connected") {
+        console.log("WebSocket connection established");
+        return;
+    }
+
+    // Handle JSON messages
     try {
-        movements = JSON.parse(event.data);
-        updateAgents(movements);
+        const data = JSON.parse(event.data);
+        
+        // Validate JSON structure
+        if (data.persona && typeof data.persona === 'object' && data.meta) {
+            updateAgents(data);
+        } else {
+            console.warn('Received unexpected JSON format:', data);
+        }
     } catch (e) {
-        console.error('Invalid JSON from server:', event.data);
+        console.error('Failed to parse server message:', e);
+        console.log('Raw server response:', event.data);
+        console.log('Full error stack:', e.stack);
     }
 };
 }
@@ -423,16 +437,43 @@ function updateStatus(message) {
 
 // Button handlers
 function startSimulation() {
-  updateStatus('Simulation running');
-  // Additional logic to start/resume simulation
+  if (connected && socket.readyState === WebSocket.OPEN) {
+    updateStatus('Starting simulation...');
+    socket.send(JSON.stringify({
+      type: 'control',
+      action: 'start',
+      speed: 1.0
+    }));
+  } else {
+    updateStatus('Error: Not connected to server');
+  }
 }
 
 function pauseSimulation() {
-  updateStatus('Simulation paused');
-  // Additional logic to pause simulation
+  if (connected && socket.readyState === WebSocket.OPEN) {
+    updateStatus('Pausing simulation...');
+    socket.send(JSON.stringify({
+      type: 'control', 
+      action: 'pause'
+    }));
+  } else {
+    updateStatus('Error: Not connected to server');
+  }
 }
 
 function resetSimulation() {
-  updateStatus('Simulation reset');
-  // Additional logic to reset simulation
+  if (connected && socket.readyState === WebSocket.OPEN) {
+    updateStatus('Resetting simulation...');
+    socket.send(JSON.stringify({
+      type: 'control',
+      action: 'reset'
+    }));
+    // Reset local agent positions
+    Object.values(personas).forEach(agent => agent.destroy());
+    personas = {};
+    pronunciatios = {};
+    movement_target = {};
+  } else {
+    updateStatus('Error: Not connected to server');
+  }
 }

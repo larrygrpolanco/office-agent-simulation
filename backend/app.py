@@ -1,4 +1,11 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Request
+from fastapi import (
+    FastAPI,
+    APIRouter,
+    HTTPException,
+    Request,
+    WebSocket,
+    WebSocketDisconnect,
+)
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict, Optional, List
@@ -225,3 +232,41 @@ def get_persona_schedule():
 
 
 app.include_router(router)
+
+# --- WebSocket endpoint for simulation updates ---
+import json
+
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    # Send a valid JSON "connected" message
+    await websocket.send_text(json.dumps({"status": "connected"}))
+    try:
+        while True:
+            # Receive environment state from frontend (as JSON)
+            data = await websocket.receive_text()
+            try:
+                env = json.loads(data)
+            except Exception:
+                # If not valid JSON, ignore
+                continue
+
+            # For demo: respond with current persona state as JSON
+            # (In a real system, you'd update simulation state here)
+            response = {
+                "persona": {
+                    sim_manager.persona_state["name"]: {
+                        "movement": sim_manager.persona_state.get("position", [0, 0]),
+                        "pronunciatio": "",
+                        "description": sim_manager.persona_state.get(
+                            "current_action", ""
+                        ),
+                        "chat": [],
+                    }
+                },
+                "meta": {"curr_time": "9:00 AM"},
+            }
+            await websocket.send_text(json.dumps(response))
+    except WebSocketDisconnect:
+        pass
