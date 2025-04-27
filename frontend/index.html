@@ -1,97 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Office Agent Simulation</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-        header {
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-        #game-container {
-            flex: 1;
-            background-color: #222;
-            position: relative;
-        }
-        .status-bar {
-            background-color: #444;
-            color: white;
-            padding: 5px 10px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .sim-time-box {
-            background: #fff;
-            color: #222;
-            border-radius: 4px;
-            padding: 6px 10px;
-            margin: 10px 0 0 10px;
-            font-size: 16px;
-            display: inline-block;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.07);
-        }
-        #simulation-controls button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 15px;
-            margin-left: 8px;
-        }
-        #simulation-controls button:hover {
-            background-color: #388e3c;
-        }
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+      header {
+        background-color: #333;
+        color: white;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .container {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+      }
+      #game-container {
+        flex: 1;
+        background-color: #222;
+        position: relative;
+      }
+      .status-bar {
+        background-color: #444;
+        color: white;
+        padding: 5px 10px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .sim-time-box {
+        background: #fff;
+        color: #222;
+        border-radius: 4px;
+        padding: 6px 10px;
+        margin: 10px 0 0 10px;
+        font-size: 16px;
+        display: inline-block;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.07);
+      }
+      #simulation-controls {
+        display: flex;
+        align-items: center;
+      }
+      #simulation-controls button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 15px;
+        margin-left: 8px;
+      }
+      #simulation-controls button:hover {
+        background-color: #388e3c;
+      }
+      .speed-control {
+        margin-left: 15px;
+        display: flex;
+        align-items: center;
+        background-color: #555;
+        padding: 5px 10px;
+        border-radius: 4px;
+      }
+      .speed-control label {
+        margin-right: 8px;
+        font-size: 14px;
+      }
+      .speed-control select {
+        background-color: #333;
+        color: white;
+        border: 1px solid #777;
+        padding: 4px 8px;
+        border-radius: 3px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <header>
-        <h1>Office Agent Simulation</h1>
-        <div id="simulation-controls">
-            <button id="start-btn">Start</button>
-            <button id="pause-btn">Pause</button>
-            <button id="reset-btn">Reset</button>
+      <h1>Office Agent Simulation</h1>
+      <div id="simulation-controls">
+        <button id="start-btn">Start</button>
+        <button id="pause-btn">Pause</button>
+        <button id="reset-btn">Reset</button>
+        <div class="speed-control">
+          <label for="sim-speed">Speed:</label>
+          <select id="sim-speed">
+            <option value="0.5">0.5x</option>
+            <option value="1.0" selected>1.0x</option>
+            <option value="2.0">2.0x</option>
+            <option value="5.0">5.0x</option>
+          </select>
         </div>
+      </div>
     </header>
-    
+
     <div class="container">
-        <div id="game-container">
-            <!-- Phaser will render here -->
-            <div class="sim-time-box">
-                <strong>Time:</strong> <span id="game-time-content">Loading...</span>
-            </div>
+      <div id="game-container">
+        <!-- Phaser will render here -->
+        <div class="sim-time-box">
+          <strong>Time:</strong> <span id="game-time-content">Loading...</span>
         </div>
+      </div>
     </div>
-    
+
     <div class="status-bar">
-        <div id="status-message">Ready to start simulation</div>
-        <div id="fps-counter">FPS: --</div>
+      <div id="status-message">Ready to start simulation</div>
+      <div id="fps-counter">FPS: --</div>
     </div>
 
     <!-- Load Phaser -->
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
-    
+
     <!-- Load our game code -->
     <script src="src/game.js"></script>
-</body>
+  </body>
 </html>

@@ -63,8 +63,30 @@ window.onload = function () {
   document
     .getElementById('reset-btn')
     .addEventListener('click', resetSimulation);
-
+    
+  // Set up speed control listener
+  document
+    .getElementById('sim-speed')
+    .addEventListener('change', updateSimulationSpeed);
 };
+
+// Update simulation speed without restarting
+function updateSimulationSpeed() {
+  if (connected && socket.readyState === WebSocket.OPEN) {
+    const speedSelect = document.getElementById('sim-speed');
+    const speed = parseFloat(speedSelect.value);
+    
+    socket.send(
+      JSON.stringify({
+        type: 'control',
+        action: 'speed',
+        speed: speed,
+      })
+    );
+    
+    updateStatus(`Simulation speed set to ${speed}x`);
+  }
+}
 
 /**
  * Preload game assets: Load the office map and all required tilesets.
@@ -83,13 +105,34 @@ function preload() {
   );
 
   // Load all new interiors tileset images (split from the original large tileset)
-  this.load.image('int_Basement_32x32', 'assets/the_office/visuals/map_assets/int_Basement_32x32.png');
-  this.load.image('int_Bathroom_32x32', 'assets/the_office/visuals/map_assets/int_Bathroom_32x32.png');
-  this.load.image('int_Classroom_and_library_32x32', 'assets/the_office/visuals/map_assets/int_Classroom_and_library_32x32.png');
-  this.load.image('int_Generic_32x32', 'assets/the_office/visuals/map_assets/int_Generic_32x32.png');
-  this.load.image('int_Grocery_store_32x32', 'assets/the_office/visuals/map_assets/int_Grocery_store_32x32.png');
-  this.load.image('int_Hospital_32x32', 'assets/the_office/visuals/map_assets/int_Hospital_32x32.png');
-  this.load.image('int_Kitchen_32x32', 'assets/the_office/visuals/map_assets/int_Kitchen_32x32.png');
+  this.load.image(
+    'int_Basement_32x32',
+    'assets/the_office/visuals/map_assets/int_Basement_32x32.png'
+  );
+  this.load.image(
+    'int_Bathroom_32x32',
+    'assets/the_office/visuals/map_assets/int_Bathroom_32x32.png'
+  );
+  this.load.image(
+    'int_Classroom_and_library_32x32',
+    'assets/the_office/visuals/map_assets/int_Classroom_and_library_32x32.png'
+  );
+  this.load.image(
+    'int_Generic_32x32',
+    'assets/the_office/visuals/map_assets/int_Generic_32x32.png'
+  );
+  this.load.image(
+    'int_Grocery_store_32x32',
+    'assets/the_office/visuals/map_assets/int_Grocery_store_32x32.png'
+  );
+  this.load.image(
+    'int_Hospital_32x32',
+    'assets/the_office/visuals/map_assets/int_Hospital_32x32.png'
+  );
+  this.load.image(
+    'int_Kitchen_32x32',
+    'assets/the_office/visuals/map_assets/int_Kitchen_32x32.png'
+  );
 
   this.load.image(
     'Modern_Office_32x32',
@@ -159,15 +202,51 @@ function create() {
 
     // Add all tilesets (names must match those in Tiled and as loaded above)
     const blocks = tryAddTileset(map, 'blocks_1', 'blocks_1');
-    const modern = tryAddTileset(map, 'Modern_Office_32x32', 'Modern_Office_32x32');
-    const roomBuilder = tryAddTileset(map, 'Room_Builder_Office_32x32', 'Room_Builder_Office_32x32');
-    const int_Basement = tryAddTileset(map, 'int_Basement_32x32', 'int_Basement_32x32');
-    const int_Bathroom = tryAddTileset(map, 'int_Bathroom_32x32', 'int_Bathroom_32x32');
-    const int_Classroom = tryAddTileset(map, 'int_Classroom_and_library_32x32', 'int_Classroom_and_library_32x32');
-    const int_Generic = tryAddTileset(map, 'int_Generic_32x32', 'int_Generic_32x32');
-    const int_Grocery = tryAddTileset(map, 'int_Grocery_store_32x32', 'int_Grocery_store_32x32');
-    const int_Hospital = tryAddTileset(map, 'int_Hospital_32x32', 'int_Hospital_32x32');
-    const int_Kitchen = tryAddTileset(map, 'int_Kitchen_32x32', 'int_Kitchen_32x32');
+    const modern = tryAddTileset(
+      map,
+      'Modern_Office_32x32',
+      'Modern_Office_32x32'
+    );
+    const roomBuilder = tryAddTileset(
+      map,
+      'Room_Builder_Office_32x32',
+      'Room_Builder_Office_32x32'
+    );
+    const int_Basement = tryAddTileset(
+      map,
+      'int_Basement_32x32',
+      'int_Basement_32x32'
+    );
+    const int_Bathroom = tryAddTileset(
+      map,
+      'int_Bathroom_32x32',
+      'int_Bathroom_32x32'
+    );
+    const int_Classroom = tryAddTileset(
+      map,
+      'int_Classroom_and_library_32x32',
+      'int_Classroom_and_library_32x32'
+    );
+    const int_Generic = tryAddTileset(
+      map,
+      'int_Generic_32x32',
+      'int_Generic_32x32'
+    );
+    const int_Grocery = tryAddTileset(
+      map,
+      'int_Grocery_store_32x32',
+      'int_Grocery_store_32x32'
+    );
+    const int_Hospital = tryAddTileset(
+      map,
+      'int_Hospital_32x32',
+      'int_Hospital_32x32'
+    );
+    const int_Kitchen = tryAddTileset(
+      map,
+      'int_Kitchen_32x32',
+      'int_Kitchen_32x32'
+    );
 
     const allTilesets = [
       blocks,
@@ -189,13 +268,38 @@ function create() {
     gameLayers.wallLayer = map.createLayer('Wall Visuals', allTilesets, 0, 0);
 
     // Create furniture layers
-    gameLayers.furnitureLayer1 = map.createLayer('Furniture Visuals L1', allTilesets, 0, 0);
-    gameLayers.furnitureLayer2 = map.createLayer('Furniture Visuals L2', allTilesets, 0, 0);
-    gameLayers.furnitureLayer3 = map.createLayer('Furniture Visuals L3', allTilesets, 0, 0);
-    gameLayers.furnitureLayer4 = map.createLayer('Furniture Visuals L4', allTilesets, 0, 0);
+    gameLayers.furnitureLayer1 = map.createLayer(
+      'Furniture Visuals L1',
+      allTilesets,
+      0,
+      0
+    );
+    gameLayers.furnitureLayer2 = map.createLayer(
+      'Furniture Visuals L2',
+      allTilesets,
+      0,
+      0
+    );
+    gameLayers.furnitureLayer3 = map.createLayer(
+      'Furniture Visuals L3',
+      allTilesets,
+      0,
+      0
+    );
+    gameLayers.furnitureLayer4 = map.createLayer(
+      'Furniture Visuals L4',
+      allTilesets,
+      0,
+      0
+    );
 
     // Create collision layer (hidden by default)
-    gameLayers.collisionLayer = map.createLayer('Collision Layer', allTilesets, 0, 0);
+    gameLayers.collisionLayer = map.createLayer(
+      'Collision Layer',
+      allTilesets,
+      0,
+      0
+    );
     gameLayers.collisionLayer.setVisible(false);
 
     updateStatus('Map loaded successfully');
@@ -288,7 +392,6 @@ function update(time, delta) {
   }
 }
 
-
 // Connect to WebSocket server
 function connectWebSocket() {
   // Close existing connection if any
@@ -296,12 +399,12 @@ function connectWebSocket() {
     socket.close();
   }
 
-  // Determine WebSocket URL (same host, different protocol)
-  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  const wsUrl = `${protocol}//${window.location.host}/ws`;
-
   // For local development, hardcode the URL
-  // const wsUrl = 'ws://localhost:8000/ws';
+  const wsUrl = 'ws://localhost:8000/ws';
+  
+  // For production, use relative URL
+  // const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  // const wsUrl = `${protocol}//${window.location.host}/ws`;
 
   // Create new WebSocket connection
   socket = new WebSocket(wsUrl);
@@ -330,29 +433,29 @@ function connectWebSocket() {
   };
 
   // Message received
-socket.onmessage = function (event) {
+  socket.onmessage = function (event) {
     // Handle plain text connection confirmation
-    if (event.data === "connected") {
-        console.log("WebSocket connection established");
-        return;
+    if (event.data === 'connected') {
+      console.log('WebSocket connection established');
+      return;
     }
 
     // Handle JSON messages
     try {
-        const data = JSON.parse(event.data);
-        
-        // Validate JSON structure
-        if (data.persona && typeof data.persona === 'object' && data.meta) {
-            updateAgents(data);
-        } else {
-            console.warn('Received unexpected JSON format:', data);
-        }
+      const data = JSON.parse(event.data);
+
+      // Validate JSON structure
+      if (data.persona && typeof data.persona === 'object' && data.meta) {
+        updateAgents(data);
+      } else {
+        console.warn('Received unexpected JSON format:', data);
+      }
     } catch (e) {
-        console.error('Failed to parse server message:', e);
-        console.log('Raw server response:', event.data);
-        console.log('Full error stack:', e.stack);
+      console.error('Failed to parse server message:', e);
+      console.log('Raw server response:', event.data);
+      console.log('Full error stack:', e.stack);
     }
-};
+  };
 }
 
 // Send current environment state to backend
@@ -379,30 +482,60 @@ function sendEnvironmentState() {
 
 // Update agent positions and animations based on backend data
 function updateAgents(movements) {
+  // Create scene reference for adding new agents
+  const scene = game.scene.scenes[0];
+  
   for (const personaName in movements.persona) {
-    if (personaName in personas) {
-      const movement = movements.persona[personaName];
-
-      // Set target position
-      movement_target[personaName] = [
-        movement.movement[0] * tile_width,
-        movement.movement[1] * tile_width,
-      ];
-
-      // Update speech bubble
-      if (movement.pronunciatio) {
-        pronunciatios[personaName].setText(movement.pronunciatio);
-      }
-
-      // Update agent info in UI
-      updateAgentInfo(personaName, movement.description);
+    const movement = movements.persona[personaName];
+    
+    // Create new agent if it doesn't exist
+    if (!(personaName in personas)) {
+      console.log(`Creating new agent: ${personaName}`);
+      
+      // Create agent sprite
+      const x = movement.movement[0] * tile_width;
+      const y = movement.movement[1] * tile_width;
+      personas[personaName] = scene.add.sprite(x, y, 'agent');
+      
+      // Add text for speech bubble/pronunciatio
+      const textStyle = { 
+        font: '14px Arial', 
+        fill: '#ffffff',
+        backgroundColor: '#333333',
+        padding: { x: 8, y: 4 },
+        borderRadius: 4
+      };
+      pronunciatios[personaName] = scene.add.text(x, y - 40, '', textStyle);
+      
+      // Set initial target position
+      movement_target[personaName] = [x, y];
     }
+    
+    // Update existing agent
+    // Set target position
+    movement_target[personaName] = [
+      movement.movement[0] * tile_width,
+      movement.movement[1] * tile_width,
+    ];
+
+    // Update speech bubble
+    if (movement.pronunciatio) {
+      pronunciatios[personaName].setText(movement.pronunciatio);
+    }
+
+    // Update agent info in UI
+    updateAgentInfo(personaName, movement.description);
   }
 
   // Update game time
   const timeElement = document.getElementById('game-time-content');
   if (timeElement && movements.meta && movements.meta.curr_time) {
     timeElement.innerHTML = movements.meta.curr_time;
+  }
+  
+  // Update simulation status based on meta data
+  if (movements.meta && movements.meta.status) {
+    updateStatus(`Simulation ${movements.meta.status}`);
   }
 }
 
@@ -434,16 +567,20 @@ function updateStatus(message) {
   }
 }
 
-
 // Button handlers
 function startSimulation() {
   if (connected && socket.readyState === WebSocket.OPEN) {
     updateStatus('Starting simulation...');
-    socket.send(JSON.stringify({
-      type: 'control',
-      action: 'start',
-      speed: 1.0
-    }));
+    const speedSelect = document.getElementById('sim-speed');
+    const speed = parseFloat(speedSelect.value);
+    
+    socket.send(
+      JSON.stringify({
+        type: 'control',
+        action: 'start',
+        speed: speed,
+      })
+    );
   } else {
     updateStatus('Error: Not connected to server');
   }
@@ -452,10 +589,12 @@ function startSimulation() {
 function pauseSimulation() {
   if (connected && socket.readyState === WebSocket.OPEN) {
     updateStatus('Pausing simulation...');
-    socket.send(JSON.stringify({
-      type: 'control', 
-      action: 'pause'
-    }));
+    socket.send(
+      JSON.stringify({
+        type: 'control',
+        action: 'pause',
+      })
+    );
   } else {
     updateStatus('Error: Not connected to server');
   }
@@ -464,12 +603,14 @@ function pauseSimulation() {
 function resetSimulation() {
   if (connected && socket.readyState === WebSocket.OPEN) {
     updateStatus('Resetting simulation...');
-    socket.send(JSON.stringify({
-      type: 'control',
-      action: 'reset'
-    }));
+    socket.send(
+      JSON.stringify({
+        type: 'control',
+        action: 'reset',
+      })
+    );
     // Reset local agent positions
-    Object.values(personas).forEach(agent => agent.destroy());
+    Object.values(personas).forEach((agent) => agent.destroy());
     personas = {};
     pronunciatios = {};
     movement_target = {};
