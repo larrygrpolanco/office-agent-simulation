@@ -1,5 +1,9 @@
 # Office Agent Simulation
 
+<p align="center" width="100%">
+<img src="cover.png" alt="Smallville" style="width: 80%; min-width: 300px; display: block; margin: auto;">
+</p>
+
 An adaptation of the "Generative Agents: Interactive Simulacra of Human Behavior" by Park et al. simulation system, focused on an office-themed environment. This project implements a single-server architecture using FastAPI for the backend, Phaser.js for the frontend, and WebSockets for real-time communication.
 
 ## Overview
