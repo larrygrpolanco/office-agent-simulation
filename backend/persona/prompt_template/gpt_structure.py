@@ -12,15 +12,19 @@ import time
 
 import sys
 import os
+
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../"))
 from backend.utils import *
 
-# openai.api_key = openai_api_key
-
-client = openai.OpenAI(
+# Create separate clients for OpenRouter and OpenAI
+openrouter_client = openai.OpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=openrouter_api_key,
 )
+
+# Keep OpenAI client for embeddings (more reliable and cost-effective)
+openai_client = openai.OpenAI(api_key=openai_api_key)
+
 
 def temp_sleep(seconds=0.1):
     time.sleep(seconds)
@@ -29,10 +33,15 @@ def temp_sleep(seconds=0.1):
 def ChatGPT_single_request(prompt):
     temp_sleep()
 
-    completion = client.chat.completions.create(
-        model="meta-llama/llama-3.3-8b-instruct:free", messages=[{"role": "user", "content": prompt}]
-    )
-    return completion.choices[0].message.content
+    try:
+        completion = openrouter_client.chat.completions.create(
+            model="meta-llama/llama-3.3-8b-instruct:free",
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return completion.choices[0].message.content
+    except Exception as e:
+        print(f"ChatGPT_single_request ERROR: {e}")
+        return "ChatGPT ERROR"
 
 
 # ============================================================================
@@ -55,13 +64,14 @@ def GPT4_request(prompt):
     temp_sleep()
 
     try:
-        completion = openai.ChatCompletion.create(
-            model="gpt-4", messages=[{"role": "user", "content": prompt}]
+        completion = openrouter_client.chat.completions.create(
+            model="meta-llama/llama-3.3-8b-instruct:free",
+            messages=[{"role": "user", "content": prompt}],
         )
-        return completion["choices"][0]["message"]["content"]
+        return completion.choices[0].message.content
 
-    except:
-        print("ChatGPT ERROR")
+    except Exception as e:
+        print(f"GPT4_request ERROR: {e}")
         return "ChatGPT ERROR"
 
 
@@ -79,13 +89,14 @@ def ChatGPT_request(prompt):
     """
     # temp_sleep()
     try:
-        completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}]
+        completion = openrouter_client.chat.completions.create(
+            model="meta-llama/llama-3.3-8b-instruct:free",
+            messages=[{"role": "user", "content": prompt}],
         )
-        return completion["choices"][0]["message"]["content"]
+        return completion.choices[0].message.content
 
-    except:
-        print("ChatGPT ERROR")
+    except Exception as e:
+        print(f"ChatGPT_request ERROR: {e}")
         return "ChatGPT ERROR"
 
 
@@ -126,7 +137,9 @@ def GPT4_safe_generate_response(
                 print(curr_gpt_response)
                 print("~~~~")
 
-        except:
+        except Exception as e:
+            if verbose:
+                print(f"GPT4_safe_generate_response attempt {i} failed: {e}")
             pass
 
     return False
@@ -174,7 +187,9 @@ def ChatGPT_safe_generate_response(
                 print(curr_gpt_response)
                 print("~~~~")
 
-        except:
+        except Exception as e:
+            if verbose:
+                print(f"ChatGPT_safe_generate_response attempt {i} failed: {e}")
             pass
 
     return False
@@ -202,7 +217,9 @@ def ChatGPT_safe_generate_response_OLD(
                 print(curr_gpt_response)
                 print("~~~~")
 
-        except:
+        except Exception as e:
+            if verbose:
+                print(f"ChatGPT_safe_generate_response_OLD attempt {i} failed: {e}")
             pass
     print("FAIL SAFE TRIGGERED")
     return fail_safe_response
@@ -227,7 +244,8 @@ def GPT_request(prompt, gpt_parameter):
     """
     temp_sleep()
     try:
-        response = openai.Completion.create(
+        # Use the legacy completions endpoint for older GPT-3 style requests
+        response = openai_client.completions.create(
             model=gpt_parameter["engine"],
             prompt=prompt,
             temperature=gpt_parameter["temperature"],
@@ -239,8 +257,8 @@ def GPT_request(prompt, gpt_parameter):
             stop=gpt_parameter["stop"],
         )
         return response.choices[0].text
-    except:
-        print("TOKEN LIMIT EXCEEDED")
+    except Exception as e:
+        print(f"GPT_request ERROR: {e}")
         return "TOKEN LIMIT EXCEEDED"
 
 
@@ -296,10 +314,19 @@ def safe_generate_response(
 
 
 def get_embedding(text, model="text-embedding-ada-002"):
+    """
+    Get embedding using OpenAI's embedding API (more reliable than OpenRouter for embeddings)
+    """
     text = text.replace("\n", " ")
     if not text:
         text = "this is blank"
-    return openai.Embedding.create(input=[text], model=model)["data"][0]["embedding"]
+    try:
+        response = openai_client.embeddings.create(input=[text], model=model)
+        return response.data[0].embedding
+    except Exception as e:
+        print(f"Embedding ERROR: {e}")
+        # Return a dummy embedding vector if the API call fails
+        return [0.0] * 1536  # text-embedding-ada-002 returns 1536 dimensions
 
 
 if __name__ == "__main__":

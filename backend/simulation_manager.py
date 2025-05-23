@@ -33,6 +33,52 @@ class SimulationManager:
             os.remove(f"{SIM_DIR}/dummy.txt")
         # Initialize Maze for spawn location
         self.maze = Maze()
+        
+        # Initialize persona immediately for step-based architecture
+        self._initialize_persona()
+
+    def _initialize_persona(self):
+        """Initialize the persona object"""
+        try:
+            persona_folder = "backend/simulation/init/personas/Michael Scott"
+            self.persona = Persona("Michael Scott", persona_folder)
+            
+            # Load initial environment state
+            env_path = "backend/simulation/init/environment/0.json"
+            with open(env_path, "r") as f:
+                env = json.load(f)
+            
+            # Set initial position from environment or spawn location
+            if "Michael Scott" in env:
+                initial_position = [env["Michael Scott"]["x"], env["Michael Scott"]["y"]]
+            else:
+                spawn = self.maze.get_spawn_location()
+                initial_position = list(spawn) if spawn else [25, 25]
+            
+            self.persona_state = {
+                "name": "Michael Scott",
+                "thoughts": ["Ready to manage the office!"],
+                "schedule": ["8:00 AM - Arrive at office", "9:00 AM - Morning announcements", "5:00 PM - Leave office"],
+                "position": initial_position,
+                "traits": ["enthusiastic", "well-meaning", "attention-seeking"],
+                "current_action": "Ready to start work",
+            }
+            
+            print(f"✅ Persona initialized successfully: {self.persona.name}")
+            
+        except Exception as e:
+            print(f"❌ Error initializing Persona: {e}")
+            import traceback
+            traceback.print_exc()
+            # Fallback to default if files missing
+            spawn = self.maze.get_spawn_location()
+            self.persona_state = {
+                "name": "Michael Scott",
+                "thoughts": ["Ready to work (fallback mode)."],
+                "schedule": ["8:00 Arrive at office", "17:00 Leave office"],
+                "position": list(spawn) if spawn else [25, 25],
+            }
+            self.persona = None
 
     def _step_file(self, step):
         return f"{SIM_DIR}/step_{step}.json"
@@ -51,46 +97,9 @@ class SimulationManager:
                 os.remove(f)
             create_folder_if_not_there(self._step_file(0))
             
-            # Initialize real Persona object
-            try:
-                persona_folder = "backend/simulation/init/personas/Michael Scott"
-                self.persona = Persona("Michael Scott", persona_folder)
-                
-                # Load initial environment state
-                env_path = "backend/simulation/init/environment/0.json"
-                with open(env_path, "r") as f:
-                    env = json.load(f)
-                
-                # Set initial position from environment or spawn location
-                if "Michael Scott" in env:
-                    initial_position = [env["Michael Scott"]["x"], env["Michael Scott"]["y"]]
-                else:
-                    spawn = self.maze.get_spawn_location()
-                    initial_position = list(spawn) if spawn else [25, 25]
-                
-                self.persona_state = {
-                    "name": "Michael Scott",
-                    "thoughts": ["Simulation started. Ready to manage the office!"],
-                    "schedule": ["8:00 AM - Arrive at office", "9:00 AM - Morning announcements", "5:00 PM - Leave office"],
-                    "position": initial_position,
-                    "traits": ["enthusiastic", "well-meaning", "attention-seeking"],
-                    "current_action": "Starting work day",
-                }
-                
-                print(f"✅ Persona initialized successfully: {self.persona.name}")
-                
-            except Exception as e:
-                print(f"❌ Error initializing Persona: {e}")
-                import traceback
-                traceback.print_exc()
-                # Fallback to default if files missing
-                spawn = self.maze.get_spawn_location()
-                self.persona_state = {
-                    "name": "Michael Scott",
-                    "thoughts": ["Simulation started (fallback mode)."],
-                    "schedule": ["8:00 Arrive at office", "17:00 Leave office"],
-                    "position": list(spawn) if spawn else [25, 25],
-                }
+            # Persona is already initialized in __init__, just update state
+            if not self.persona:
+                self._initialize_persona()
                 
             write_json(self.persona_state, self._step_file(0))
             # Remove any leftover frontend files
@@ -109,29 +118,13 @@ class SimulationManager:
             for f in glob.glob(f"{SIM_DIR}/frontend_*.json"):
                 os.remove(f)
             
-            # Reset persona state to initial values
-            spawn = self.maze.get_spawn_location()
-            self.persona_state = {
-                "name": "Michael Scott",
-                "thoughts": ["Simulation reset. Ready to start fresh!"],
-                "schedule": ["8:00 AM - Arrive at office", "9:00 AM - Morning announcements", "5:00 PM - Leave office"],
-                "position": list(spawn) if spawn else [25, 25],
-                "traits": ["enthusiastic", "well-meaning", "attention-seeking"],
-                "current_action": "Ready to start",
-            }
-            
-            # Reinitialize persona if needed
-            if self.persona:
-                try:
-                    persona_folder = "backend/simulation/init/personas/Michael Scott"
-                    self.persona = Persona("Michael Scott", persona_folder)
-                    print(f"✅ Persona reinitialized: {self.persona.name}")
-                except Exception as e:
-                    print(f"❌ Error reinitializing Persona: {e}")
-                    self.persona = None
+            # Reinitialize persona
+            self._initialize_persona()
 
     def process_agent_decision(self, env_data):
         """Process agent cognitive loop and return movement decision"""
+        print(f"🔄 Starting cognitive loop for Michael Scott...")
+        
         # Ensure we always have a valid position
         current_position = self.persona_state.get("position")
         if not current_position or current_position is None:
@@ -139,14 +132,19 @@ class SimulationManager:
             current_position = list(spawn) if spawn else [25, 25]
             self.persona_state["position"] = current_position
         
+        print(f"📍 Current position: {current_position}")
+        
         if not self.persona:
-            # Fallback behavior if persona not initialized
-            return {
-                "movement": current_position,
-                "pronunciatio": "💼",
-                "description": "Working at the office (persona not initialized)",
-                "chat": []
-            }
+            print("❌ No persona initialized - trying to reinitialize...")
+            self._initialize_persona()
+            if not self.persona:
+                print("❌ Persona initialization failed - using fallback")
+                return {
+                    "movement": current_position,
+                    "pronunciatio": "💼",
+                    "description": "Working at the office (persona not initialized)",
+                    "chat": []
+                }
         
         try:
             # Get current position from environment data
@@ -154,13 +152,18 @@ class SimulationManager:
             curr_tile = (agent_data.get("x", current_position[0]), agent_data.get("y", current_position[1]))
             curr_time = datetime.datetime.now()
             
+            print(f"🎯 Input to persona.move(): curr_tile={curr_tile}, curr_time={curr_time}")
+            
             # Call the actual cognitive loop
+            print("🧠 Calling persona.move() - starting AI cognitive loop...")
             next_tile, pronunciatio, description = self.persona.move(
                 self.maze, 
                 {"Michael Scott": self.persona}, 
                 curr_tile, 
                 curr_time
             )
+            
+            print(f"✅ persona.move() returned: next_tile={next_tile}, pronunciatio={pronunciatio}, description={description}")
             
             # Ensure next_tile is valid
             if next_tile is None or not isinstance(next_tile, (list, tuple)) or len(next_tile) != 2:
@@ -171,12 +174,15 @@ class SimulationManager:
             self.persona_state["position"] = list(next_tile)
             self.persona_state["current_action"] = description
             
-            return {
+            result = {
                 "movement": list(next_tile),
                 "pronunciatio": pronunciatio if pronunciatio else "💼",
                 "description": description if description else "Working at the office",
                 "chat": getattr(self.persona.scratch, 'chat', [])
             }
+            
+            print(f"📤 Returning result: {result}")
+            return result
             
         except Exception as e:
             print(f"❌ Error in cognitive loop: {e}")

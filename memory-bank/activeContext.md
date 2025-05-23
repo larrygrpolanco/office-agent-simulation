@@ -2,74 +2,119 @@
 
 ## Current Work Focus
 
-We are currently in the **frontend-backend integration phase** of the Office Agent Simulation project. The focus is on:
+We are currently in the **AI cognitive loop integration phase** of the Office Agent Simulation project. The focus is on:
 
-1. **Enhancing frontend controls and visualization**: We've updated the frontend with proper simulation controls (start, pause, reset, speed control) and implemented dynamic agent creation to visualize agents received from the backend.
+1. **✅ COMPLETED: Frontend-Backend Integration**: Successfully established WebSocket communication between FastAPI backend and Phaser.js frontend with step-based simulation architecture.
 
-2. **✅ RESOLVED: WebSocket connection issues**: The frontend and backend are now successfully establishing WebSocket connections. The backend server is running on port 8000 and agents are being created and visualized properly.
+2. **✅ COMPLETED: Frontend Code Refactoring**: Broke down the monolithic 600+ line game.js file into modular components for better maintainability.
 
-3. **Preparing for agent integration**: Once the connection issues are resolved, we'll integrate the Persona cognitive loop with the simulation state to replace placeholder agent movement logic with actual agent decision-making.
+3. **🔄 IN PROGRESS: AI Cognitive Loop Integration**: Working on connecting the Generative Agents persona system with OpenRouter API for actual AI-driven agent behavior.
 
-## Recent Changes
+## Recent Major Achievements
 
-- Enhanced frontend with simulation speed control dropdown (0.5x, 1.0x, 2.0x, 5.0x)
-- Implemented dynamic agent creation in the frontend when new agents are received from backend
-- Updated control buttons to send proper WebSocket commands to backend
-- Added speed change event handler to update simulation speed without restarting
-- Fixed WebSocket URL to use hardcoded localhost:8000 for development
-- Improved error handling in the frontend
-- **✅ FIXED: Started FastAPI backend server** - Backend now running on port 8000 with WebSocket endpoint
-- **✅ FIXED: Null position handling** - Backend now provides valid spawn positions from maze data
-- **✅ VERIFIED: End-to-end connection** - Frontend successfully connects, creates agents, and displays simulation
+### Frontend-Backend Integration ✅
+- **WebSocket Architecture**: Implemented real-time communication using WebSocket protocol
+- **Step-Based Simulation**: Created a step-by-step simulation system where frontend sends environment state and backend responds with agent decisions
+- **JSON Protocol**: Established standardized JSON message format for communication:
+  ```json
+  // Frontend → Backend
+  {
+    "action": "next_step",
+    "step_id": 1,
+    "environment": {
+      "Michael Scott": { "x": 25, "y": 25 }
+    }
+  }
+  
+  // Backend → Frontend
+  {
+    "persona": {
+      "Michael Scott": {
+        "movement": [26, 25],
+        "pronunciatio": "💼",
+        "description": "walking to the conference room",
+        "chat": []
+      }
+    },
+    "meta": {
+      "curr_time": "May 23, 2025, 13:27:05",
+      "processing_time": "2.3s"
+    }
+  }
+  ```
 
-## Next Steps
+### Frontend Code Refactoring ✅
+Broke down the large `frontend/src/game.js` (600+ lines) into modular components:
 
-### Immediate Tasks
+- **`GameConfig.js`**: Game configuration, constants, and tileset definitions
+- **`WebSocketManager.js`**: All WebSocket communication logic
+- **`AgentManager.js`**: Agent creation, movement, and visual updates
+- **`MapManager.js`**: Map loading, tileset management, and layer creation
+- **`SimulationController.js`**: Step-based simulation logic, auto mode, and UI updates
+- **`game.js`**: Refactored main file that orchestrates all components (now ~100 lines)
 
-1. **Fix WebSocket Connection Issues**:
-   - Verify backend is running on the expected port (8000) and path (/ws)
-   - Check for any network/firewall issues preventing WebSocket connection
-   - Ensure backend WebSocket handler is properly configured to accept connections
-   - Investigate the source of non-JSON "connected" message
+### Technical Architecture Established ✅
+- **FastAPI Backend**: Running on port 8000 with WebSocket endpoint `/ws`
+- **Phaser.js Frontend**: Modular component-based architecture
+- **Real-time Communication**: Stable WebSocket connection with automatic reconnection
+- **Step-based Processing**: Frontend triggers backend AI processing on demand
+- **Auto Mode**: Configurable automatic stepping with adjustable delays
+- **Debug Logging**: Comprehensive logging for troubleshooting AI integration
 
-2. **Test End-to-End Communication**:
-   - Once connection is established, verify that control commands are received by backend
-   - Confirm that agent updates from backend are properly visualized in frontend
+## Current Challenge: AI Cognitive Loop Integration 🔄
 
-3. **Integrate Persona Cognitive Loop**:
-   - Instantiate Persona objects for each agent in the backend simulation state
-   - Update process_environment to use the cognitive loop
-   - Remove placeholder agent movement logic
+### Issue Identified
+The persona initialization is failing due to missing/incorrect memory files:
+```
+FileNotFoundError: [Errno 2] No such file or directory: 
+'backend/simulation/init/personas/Michael Scott/bootstrap_memory/associative_memory/embeddings.json'
+```
 
-### Medium-Term Tasks
+### Root Cause
+- The persona system expects `embeddings.json` but we have `embeddings.csv`
+- Memory file structure doesn't match the original Generative Agents format
+- Need to examine the original example files to understand correct structure
 
-- Refine agent behaviors for office-specific scenarios
-- Improve pathfinding and event handling in the environment
-- Add agent detail panels and interaction UI
-- Implement agent conversation visualization
+### Next Steps
+1. **Fix Memory File Structure**: Convert/create proper `embeddings.json` file
+2. **Verify Persona Initialization**: Ensure Michael Scott persona loads correctly
+3. **Test AI Cognitive Loop**: Verify OpenRouter API integration works end-to-end
+4. **Debug AI Responses**: Use the comprehensive debug logging to troubleshoot any AI issues
 
 ## Active Decisions & Considerations
 
-- **Use hardcoded WebSocket URL for development**: This simplifies testing but will need to be made configurable for production.
-- **Implement dynamic agent creation**: This allows the frontend to adapt to any number of agents without hardcoding.
-- **Add simulation speed control**: This provides flexibility for testing and demonstration.
-- **Preserve original cognitive loop structure**: Once connection issues are resolved, we'll integrate the cognitive loop without major modifications.
+- **Modular Frontend Architecture**: The refactored code is much more maintainable and easier to extend
+- **Step-Based vs Real-Time**: Step-based approach allows for better AI debugging and control
+- **OpenRouter Integration**: Using OpenRouter API for AI responses instead of direct OpenAI
+- **Debug-First Approach**: Extensive logging helps identify exactly where issues occur
 
 ## Learnings & Project Insights
 
-- WebSocket connection between frontend and backend is more challenging than anticipated
-- The frontend visualization and controls are now more robust and flexible
-- Documentation-driven development continues to be effective for tracking progress and clarifying next steps
+### Frontend-Backend Integration Patterns
+- **WebSocket Protocol**: Excellent for real-time bidirectional communication
+- **JSON Message Format**: Standardized format makes debugging and extension easier
+- **Component Separation**: Breaking large files into focused modules dramatically improves maintainability
+- **Error Handling**: Comprehensive error handling at each layer prevents cascading failures
+
+### AI Integration Challenges
+- **Memory File Formats**: The Generative Agents system has specific file format requirements
+- **Initialization Order**: Persona objects must be properly initialized before cognitive loop can run
+- **API Integration**: OpenRouter provides a good abstraction layer for different AI models
 
 ## Current Status Summary
 
-**✅ MAJOR MILESTONE ACHIEVED**: The WebSocket connection issues have been completely resolved! The simulation is now fully functional with:
+**✅ MAJOR MILESTONE ACHIEVED**: Frontend-backend integration is complete and robust!
 
-- Backend FastAPI server running successfully on port 8000
-- WebSocket connections established and stable
-- "Test Persona" agent visible and responsive in the office environment
-- All simulation controls (Start, Pause, Reset, Speed) working
-- Real-time communication between frontend and backend
-- Proper agent positioning using maze spawn locations
+**✅ MAJOR MILESTONE ACHIEVED**: Frontend code refactoring is complete with clean modular architecture!
 
-**Next Priority**: The foundation is now solid for integrating the full Persona cognitive loop to replace the current placeholder agent behavior with actual AI-driven decision making.
+**🔄 CURRENT FOCUS**: Fixing persona memory file structure to enable AI cognitive loop integration.
+
+**Next Priority**: Once persona initialization is fixed, we'll have a fully functional AI-driven office simulation with real agent decision-making powered by OpenRouter API.
+
+## Technical Debt & Future Improvements
+
+- **Environment Configuration**: Make WebSocket URL configurable for different environments
+- **Error Recovery**: Add more sophisticated error recovery for AI API failures
+- **Performance Optimization**: Consider caching and batching for multiple agents
+- **UI Enhancements**: Add agent detail panels and conversation visualization
+- **Testing**: Add automated tests for WebSocket communication and AI integration
