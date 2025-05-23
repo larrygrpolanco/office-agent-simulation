@@ -12,9 +12,9 @@ import numpy
 import datetime
 import random
 
-from global_methods import *
-from persona.prompt_template.gpt_structure import *
-from utils import *
+from backend.global_methods import *
+from backend.persona.prompt_template.gpt_structure import *
+from backend.utils import *
 
 ##############################################################################
 #                    PERSONA Chapter 1: Prompt Structures                    #

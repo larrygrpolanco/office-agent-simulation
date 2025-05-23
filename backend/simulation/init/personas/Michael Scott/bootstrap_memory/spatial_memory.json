@@ -1,0 +1,37 @@
+{
+  "The Office": {
+    "Open Workspace": {
+      "Desk Cluster A": ["Assistant's Desk", "Accountant Desk"],
+      "Desk Cluster B": ["Office Administrator Desk", "Sales Rep Desk", "HR Rep Desk"],
+      "Copy Area": ["Printer", "Copy Machine"]
+    },
+    "Regional Manager Office": {
+      "Regional Manager Office": ["Regional Manager Desk"]
+    },
+    "Reception": {
+      "Reception": ["Reception Desk"],
+      "Reception Waiting Area": []
+    },
+    "Kitchen": {
+      "Kitchenette": ["Coffee Machine", "Fridge", "Microwave"]
+    },
+    "Conference Room": {
+      "Conference Room": ["Conference Table", "Whiteboard"]
+    },
+    "Break Room": {
+      "Break Room": ["Vending Machine"]
+    },
+    "Supplies Closet": {
+      "Storage Nook": ["File Cabinet", "Supply Shelf"]
+    },
+    "Forman Office": {
+      "Forman Office": ["Forman Desk"]
+    },
+    "Kitchen Closet": {
+      "Kitchen Closet": ["Closet Desk"]
+    },
+    "Bathroom": {
+      "Bathroom": []
+    }
+  }
+}

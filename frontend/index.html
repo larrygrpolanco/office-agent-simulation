@@ -38,6 +38,7 @@
         padding: 5px 10px;
         display: flex;
         justify-content: space-between;
+        align-items: center;
       }
       .sim-time-box {
         background: #fff;
@@ -52,6 +53,12 @@
       #simulation-controls {
         display: flex;
         align-items: center;
+        gap: 10px;
+      }
+      .control-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
       #simulation-controls button {
         background-color: #4caf50;
@@ -61,29 +68,74 @@
         border-radius: 4px;
         cursor: pointer;
         font-size: 15px;
-        margin-left: 8px;
+        transition: background-color 0.2s;
       }
-      #simulation-controls button:hover {
+      #simulation-controls button:hover:not(:disabled) {
         background-color: #388e3c;
       }
-      .speed-control {
-        margin-left: 15px;
+      #simulation-controls button:disabled {
+        background-color: #666;
+        cursor: not-allowed;
+      }
+      #next-step-btn {
+        background-color: #2196f3;
+      }
+      #next-step-btn:hover:not(:disabled) {
+        background-color: #1976d2;
+      }
+      .auto-mode-control {
         display: flex;
         align-items: center;
         background-color: #555;
         padding: 5px 10px;
         border-radius: 4px;
+        gap: 8px;
       }
-      .speed-control label {
-        margin-right: 8px;
+      .auto-mode-control label {
         font-size: 14px;
+        margin: 0;
       }
-      .speed-control select {
+      .auto-mode-control input[type="checkbox"] {
+        margin: 0;
+      }
+      .auto-mode-control select {
         background-color: #333;
         color: white;
         border: 1px solid #777;
         padding: 4px 8px;
         border-radius: 3px;
+        font-size: 12px;
+      }
+      .step-info {
+        background-color: #555;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      .processing-indicator {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        background-color: #ff9800;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      .processing-indicator.active {
+        display: flex;
+      }
+      .spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid #ffffff40;
+        border-top: 2px solid #ffffff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
       }
     </style>
   </head>
@@ -91,17 +143,31 @@
     <header>
       <h1>Office Agent Simulation</h1>
       <div id="simulation-controls">
-        <button id="start-btn">Start</button>
-        <button id="pause-btn">Pause</button>
-        <button id="reset-btn">Reset</button>
-        <div class="speed-control">
-          <label for="sim-speed">Speed:</label>
-          <select id="sim-speed">
-            <option value="0.5">0.5x</option>
-            <option value="1.0" selected>1.0x</option>
-            <option value="2.0">2.0x</option>
-            <option value="5.0">5.0x</option>
+        <div class="control-group">
+          <button id="next-step-btn">Next Step</button>
+          <button id="reset-btn">Reset</button>
+        </div>
+        
+        <div class="auto-mode-control">
+          <label>
+            <input type="checkbox" id="auto-mode-checkbox"> Auto Mode
+          </label>
+          <select id="auto-delay" disabled>
+            <option value="1000">1s delay</option>
+            <option value="2000" selected>2s delay</option>
+            <option value="3000">3s delay</option>
+            <option value="5000">5s delay</option>
+            <option value="10000">10s delay</option>
           </select>
+        </div>
+        
+        <div class="step-info">
+          Step: <span id="step-counter">0</span>
+        </div>
+        
+        <div class="processing-indicator" id="processing-indicator">
+          <div class="spinner"></div>
+          <span id="processing-text">AI thinking...</span>
         </div>
       </div>
     </header>
@@ -110,14 +176,17 @@
       <div id="game-container">
         <!-- Phaser will render here -->
         <div class="sim-time-box">
-          <strong>Time:</strong> <span id="game-time-content">Loading...</span>
+          <strong>Time:</strong> <span id="game-time-content">Ready</span>
         </div>
       </div>
     </div>
 
     <div class="status-bar">
       <div id="status-message">Ready to start simulation</div>
-      <div id="fps-counter">FPS: --</div>
+      <div>
+        <span id="fps-counter">FPS: --</span>
+        <span style="margin-left: 20px;" id="processing-time"></span>
+      </div>
     </div>
 
     <!-- Load Phaser -->

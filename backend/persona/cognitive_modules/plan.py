@@ -11,10 +11,10 @@ import sys
 import time
 sys.path.append('../../')
 
-from global_methods import *
-from persona.prompt_template.run_gpt_prompt import *
-from persona.cognitive_modules.retrieve import *
-from persona.cognitive_modules.converse import *
+from backend.global_methods import *
+from backend.persona.prompt_template.run_gpt_prompt import *
+from backend.persona.cognitive_modules.retrieve import *
+from backend.persona.cognitive_modules.converse import *
 
 ##############################################################################
 # CHAPTER 2: Generate
@@ -517,7 +517,6 @@ def _long_term_planning(persona, new_day):
   # print("Done sleeping!")
 
 
-
 def _determine_action(persona, maze): 
   """
   Creates the next action sequence for the persona. 
@@ -1005,49 +1004,3 @@ def plan(persona, maze, personas, new_day, retrieved):
       persona.scratch.chatting_with_buffer[persona_name] -= 1
 
   return persona.scratch.act_address
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 

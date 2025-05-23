@@ -10,15 +10,17 @@ import random
 import openai
 import time
 
-from utils import *
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../../"))
+from backend.utils import *
+
+# openai.api_key = openai_api_key
 
 client = openai.OpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=openrouter_api_key,
 )
-
-# openai.api_key = openai_api_key
-
 
 def temp_sleep(seconds=0.1):
     time.sleep(seconds)

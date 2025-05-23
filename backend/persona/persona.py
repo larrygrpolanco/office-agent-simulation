@@ -16,18 +16,18 @@ import random
 
 sys.path.append("../")
 
-from global_methods import *
+from backend.global_methods import *
 
-from persona.memory_structures.spatial_memory import *
-from persona.memory_structures.associative_memory import *
-from persona.memory_structures.scratch import *
+from backend.persona.memory_structures.spatial_memory import *
+from backend.persona.memory_structures.associative_memory import *
+from backend.persona.memory_structures.scratch import *
 
-from persona.cognitive_modules.perceive import *
-from persona.cognitive_modules.retrieve import *
-from persona.cognitive_modules.plan import *
-from persona.cognitive_modules.reflect import *
-from persona.cognitive_modules.execute import *
-from persona.cognitive_modules.converse import *
+from backend.persona.cognitive_modules.perceive import *
+from backend.persona.cognitive_modules.retrieve import *
+from backend.persona.cognitive_modules.plan import *
+from backend.persona.cognitive_modules.reflect import *
+from backend.persona.cognitive_modules.execute import *
+from backend.persona.cognitive_modules.converse import *
 
 
 class Persona:

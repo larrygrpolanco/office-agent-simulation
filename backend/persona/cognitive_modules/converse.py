@@ -12,13 +12,13 @@ import random
 
 sys.path.append("../")
 
-from global_methods import *
+from backend.global_methods import *
 
-from persona.memory_structures.spatial_memory import *
-from persona.memory_structures.associative_memory import *
-from persona.memory_structures.scratch import *
-from persona.cognitive_modules.retrieve import *
-from persona.prompt_template.run_gpt_prompt import *
+from backend.persona.memory_structures.spatial_memory import *
+from backend.persona.memory_structures.associative_memory import *
+from backend.persona.memory_structures.scratch import *
+from backend.persona.cognitive_modules.retrieve import *
+from backend.persona.prompt_template.run_gpt_prompt import *
 
 
 def generate_agent_chat_summarize_ideas(

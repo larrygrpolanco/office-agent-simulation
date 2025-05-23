@@ -1,8 +1,8 @@
 /**
- * Office Agent Simulation - Frontend Game Logic
+ * Office Agent Simulation - Frontend Game Logic (Step-Based Architecture)
  *
  * This file implements the Phaser.js game logic and WebSocket communication
- * for the Office Agent Simulation.
+ * for the Office Agent Simulation using a step-based approach suitable for AI agents.
  */
 
 // Game configuration
@@ -43,6 +43,12 @@ let statusMessage;
 let fpsCounter;
 let lastFpsUpdate = 0;
 
+// Step-based simulation state
+let currentStep = 0;
+let isProcessing = false;
+let autoMode = false;
+let autoModeTimeout = null;
+
 let gameLayers = {};
 
 // Initialize game when the window loads
@@ -55,38 +61,20 @@ window.onload = function () {
 
   // Set up simulation button listeners
   document
-    .getElementById('start-btn')
-    .addEventListener('click', startSimulation);
-  document
-    .getElementById('pause-btn')
-    .addEventListener('click', pauseSimulation);
+    .getElementById('next-step-btn')
+    .addEventListener('click', nextStep);
   document
     .getElementById('reset-btn')
     .addEventListener('click', resetSimulation);
     
-  // Set up speed control listener
+  // Set up auto mode listeners
   document
-    .getElementById('sim-speed')
-    .addEventListener('change', updateSimulationSpeed);
+    .getElementById('auto-mode-checkbox')
+    .addEventListener('change', toggleAutoMode);
+  document
+    .getElementById('auto-delay')
+    .addEventListener('change', updateAutoDelay);
 };
-
-// Update simulation speed without restarting
-function updateSimulationSpeed() {
-  if (connected && socket.readyState === WebSocket.OPEN) {
-    const speedSelect = document.getElementById('sim-speed');
-    const speed = parseFloat(speedSelect.value);
-    
-    socket.send(
-      JSON.stringify({
-        type: 'control',
-        action: 'speed',
-        speed: speed,
-      })
-    );
-    
-    updateStatus(`Simulation speed set to ${speed}x`);
-  }
-}
 
 /**
  * Preload game assets: Load the office map and all required tilesets.
@@ -328,7 +316,7 @@ function create() {
   // Set up keyboard input
   cursors = this.input.keyboard.createCursorKeys();
 
-  // Connect to WebSocket server (can be left as is for now)
+  // Connect to WebSocket server
   connectWebSocket();
 
   // Show ready message
@@ -402,18 +390,13 @@ function connectWebSocket() {
   // For local development, hardcode the URL
   const wsUrl = 'ws://localhost:8000/ws';
   
-  // For production, use relative URL
-  // const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  // const wsUrl = `${protocol}//${window.location.host}/ws`;
-
   // Create new WebSocket connection
   socket = new WebSocket(wsUrl);
 
   // Connection opened
   socket.onopen = function (event) {
     connected = true;
-    updateStatus('Connected to server');
-    sendEnvironmentState();
+    updateStatus('Connected to server - Ready for simulation');
   };
 
   // Connection closed
@@ -446,7 +429,7 @@ function connectWebSocket() {
 
       // Validate JSON structure
       if (data.persona && typeof data.persona === 'object' && data.meta) {
-        updateAgents(data);
+        handleStepResponse(data);
       } else {
         console.warn('Received unexpected JSON format:', data);
       }
@@ -458,26 +441,97 @@ function connectWebSocket() {
   };
 }
 
-// Send current environment state to backend
-function sendEnvironmentState() {
-  if (connected && socket.readyState === WebSocket.OPEN) {
-    const envData = {};
+// Handle step response from backend
+function handleStepResponse(data) {
+  // Stop processing indicator
+  setProcessingState(false);
+  
+  // Update agents
+  updateAgents(data);
+  
+  // Update step counter
+  currentStep++;
+  document.getElementById('step-counter').textContent = currentStep;
+  
+  // Show processing time if available
+  if (data.meta && data.meta.processing_time) {
+    document.getElementById('processing-time').textContent = 
+      `Last step: ${data.meta.processing_time}`;
+  }
+  
+  // Update game time
+  const timeElement = document.getElementById('game-time-content');
+  if (timeElement && data.meta && data.meta.curr_time) {
+    timeElement.innerHTML = data.meta.curr_time;
+  }
+  
+  // Update status
+  updateStatus(`Step ${currentStep} completed`);
+  
+  // If auto mode is enabled, schedule next step
+  if (autoMode) {
+    const delay = parseInt(document.getElementById('auto-delay').value);
+    autoModeTimeout = setTimeout(() => {
+      if (autoMode && !isProcessing) {
+        nextStep();
+      }
+    }, delay);
+  }
+}
 
-    // Add each agent's position
-    for (const personaName in personas) {
-      const persona = personas[personaName];
-
-      envData[personaName] = {
-        x: Math.ceil(persona.x / tile_width),
-        y: Math.ceil(persona.y / tile_width),
-      };
+// Execute next simulation step
+function nextStep() {
+  if (!connected || isProcessing) {
+    if (!connected) {
+      updateStatus('Error: Not connected to server');
     }
-
-    socket.send(JSON.stringify(envData));
+    return;
   }
 
-  // Schedule next update
-  setTimeout(sendEnvironmentState, 1000);
+  // Set processing state
+  setProcessingState(true);
+  
+  // Send step request to backend
+  const stepRequest = {
+    action: 'next_step',
+    step_id: currentStep + 1,
+    environment: getCurrentEnvironmentState()
+  };
+  
+  socket.send(JSON.stringify(stepRequest));
+  updateStatus(`Processing step ${currentStep + 1}...`);
+}
+
+// Get current environment state
+function getCurrentEnvironmentState() {
+  const envData = {};
+
+  // Add each agent's position
+  for (const personaName in personas) {
+    const persona = personas[personaName];
+    envData[personaName] = {
+      x: Math.ceil(persona.x / tile_width),
+      y: Math.ceil(persona.y / tile_width),
+    };
+  }
+
+  return envData;
+}
+
+// Set processing state (show/hide spinner, disable buttons)
+function setProcessingState(processing) {
+  isProcessing = processing;
+  
+  const nextStepBtn = document.getElementById('next-step-btn');
+  const processingIndicator = document.getElementById('processing-indicator');
+  
+  if (processing) {
+    nextStepBtn.disabled = true;
+    processingIndicator.classList.add('active');
+  } else {
+    nextStepBtn.disabled = false;
+    processingIndicator.classList.remove('active');
+  }
 }
 
 // Update agent positions and animations based on backend data
@@ -526,17 +580,6 @@ function updateAgents(movements) {
     // Update agent info in UI
     updateAgentInfo(personaName, movement.description);
   }
-
-  // Update game time
-  const timeElement = document.getElementById('game-time-content');
-  if (timeElement && movements.meta && movements.meta.curr_time) {
-    timeElement.innerHTML = movements.meta.curr_time;
-  }
-  
-  // Update simulation status based on meta data
-  if (movements.meta && movements.meta.status) {
-    updateStatus(`Simulation ${movements.meta.status}`);
-  }
 }
 
 // Update agent information in the UI
@@ -567,53 +610,85 @@ function updateStatus(message) {
   }
 }
 
-// Button handlers
-function startSimulation() {
-  if (connected && socket.readyState === WebSocket.OPEN) {
-    updateStatus('Starting simulation...');
-    const speedSelect = document.getElementById('sim-speed');
-    const speed = parseFloat(speedSelect.value);
-    
-    socket.send(
-      JSON.stringify({
-        type: 'control',
-        action: 'start',
-        speed: speed,
-      })
-    );
+// Toggle auto mode
+function toggleAutoMode() {
+  const checkbox = document.getElementById('auto-mode-checkbox');
+  const delaySelect = document.getElementById('auto-delay');
+  
+  autoMode = checkbox.checked;
+  delaySelect.disabled = !autoMode;
+  
+  if (autoMode) {
+    updateStatus('Auto mode enabled');
+    // Start auto mode if not currently processing
+    if (!isProcessing && connected) {
+      const delay = parseInt(delaySelect.value);
+      autoModeTimeout = setTimeout(() => {
+        if (autoMode && !isProcessing) {
+          nextStep();
+        }
+      }, delay);
+    }
   } else {
-    updateStatus('Error: Not connected to server');
+    updateStatus('Auto mode disabled');
+    // Clear any pending auto step
+    if (autoModeTimeout) {
+      clearTimeout(autoModeTimeout);
+      autoModeTimeout = null;
+    }
   }
 }
 
-function pauseSimulation() {
-  if (connected && socket.readyState === WebSocket.OPEN) {
-    updateStatus('Pausing simulation...');
-    socket.send(
-      JSON.stringify({
-        type: 'control',
-        action: 'pause',
-      })
-    );
-  } else {
-    updateStatus('Error: Not connected to server');
+// Update auto mode delay
+function updateAutoDelay() {
+  // If auto mode is active and we have a pending timeout, restart it with new delay
+  if (autoMode && autoModeTimeout) {
+    clearTimeout(autoModeTimeout);
+    const delay = parseInt(document.getElementById('auto-delay').value);
+    autoModeTimeout = setTimeout(() => {
+      if (autoMode && !isProcessing) {
+        nextStep();
+      }
+    }, delay);
   }
 }
 
+// Reset simulation
 function resetSimulation() {
   if (connected && socket.readyState === WebSocket.OPEN) {
+    // Stop auto mode
+    autoMode = false;
+    document.getElementById('auto-mode-checkbox').checked = false;
+    document.getElementById('auto-delay').disabled = true;
+    if (autoModeTimeout) {
+      clearTimeout(autoModeTimeout);
+      autoModeTimeout = null;
+    }
+    
+    // Reset processing state
+    setProcessingState(false);
+    
+    // Reset step counter
+    currentStep = 0;
+    document.getElementById('step-counter').textContent = currentStep;
+    
+    // Clear processing time
+    document.getElementById('processing-time').textContent = '';
+    
     updateStatus('Resetting simulation...');
-    socket.send(
-      JSON.stringify({
-        type: 'control',
-        action: 'reset',
-      })
-    );
+    
+    socket.send(JSON.stringify({
+      action: 'reset'
+    }));
+    
     // Reset local agent positions
     Object.values(personas).forEach((agent) => agent.destroy());
+    Object.values(pronunciatios).forEach((text) => text.destroy());
     personas = {};
     pronunciatios = {};
     movement_target = {};
+    
+    updateStatus('Simulation reset - Ready for next step');
   } else {
     updateStatus('Error: Not connected to server');
   }

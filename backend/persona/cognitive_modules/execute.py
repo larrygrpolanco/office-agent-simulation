@@ -8,9 +8,9 @@ import sys
 import random
 sys.path.append('../../')
 
-from global_methods import *
-from path_finder import *
-from utils import *
+from backend.global_methods import *
+from backend.path_finder import *
+from backend.utils import *
 
 def execute(persona, maze, personas, plan): 
   """
@@ -157,18 +157,3 @@ def execute(persona, maze, personas, plan):
 
   execution = ret, persona.scratch.act_pronunciatio, description
   return execution
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

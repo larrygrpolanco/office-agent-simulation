@@ -12,9 +12,9 @@ import ast
 
 sys.path.append('../../')
 
-from global_methods import *
-from persona.prompt_template.gpt_structure import *
-from persona.prompt_template.print_prompt import *
+from backend.global_methods import *
+from backend.persona.prompt_template.gpt_structure import *
+from backend.persona.prompt_template.print_prompt import *
 
 def get_random_alphanumeric(i=6, j=6): 
   """
