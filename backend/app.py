@@ -254,18 +254,24 @@ async def websocket_endpoint(websocket: WebSocket):
 
             # For demo: respond with current persona state as JSON
             # (In a real system, you'd update simulation state here)
+            position = sim_manager.persona_state.get("position", None)
+            if position is None:
+                # Get a default spawn position from the maze
+                position = sim_manager.maze.get_spawn_location()
+                sim_manager.persona_state["position"] = position
+            
             response = {
                 "persona": {
                     sim_manager.persona_state["name"]: {
-                        "movement": sim_manager.persona_state.get("position", [0, 0]),
-                        "pronunciatio": "",
+                        "movement": position,
+                        "pronunciatio": "💼 Working...",
                         "description": sim_manager.persona_state.get(
-                            "current_action", ""
+                            "current_action", "Starting work day"
                         ),
                         "chat": [],
                     }
                 },
-                "meta": {"curr_time": "9:00 AM"},
+                "meta": {"curr_time": "9:00 AM", "status": "running"},
             }
             await websocket.send_text(json.dumps(response))
     except WebSocketDisconnect:

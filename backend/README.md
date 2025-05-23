@@ -1,5 +1,9 @@
 # Office Agent Simulation Backend
 
+Started the FastAPI backend server using 
+`uvicorn backend.app:app --host 0.0.0.0 --port 8000 --reload`
+
+
 ## FastAPI Server Overview
 
 This backend provides endpoints for step-by-step simulation control and persona inspection, designed for integration with a frontend UI.

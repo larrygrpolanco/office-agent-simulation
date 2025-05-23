@@ -9,7 +9,7 @@ This directory contains prompt templates used to generate agent behaviors throug
 - **gpt_structure.py**: Core functionality for generating embeddings and structuring prompts
 - **run_gpt_prompt.py**: Orchestrates prompt execution for different cognitive functions
 - **print_prompt.py**: Utilities for printing and debugging prompts
-- **defunct_run_gpt_prompt.py**: Deprecated prompt systems (maintained for reference)
+
 
 ### Version Directories
 The templates are organized into version directories:

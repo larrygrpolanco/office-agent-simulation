@@ -8,6 +8,8 @@ load_dotenv()
 
 # Get OpenAI API Key from environment variable
 openai_api_key = os.environ.get("OPENAI_API_KEY")
+openrouter_api_key = os.environ.get("OPENROUTER_API_KEY")
+
 
 # Put your name
 key_owner = "<Lawrence>"
