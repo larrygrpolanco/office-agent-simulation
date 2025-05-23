@@ -1,7 +1,0 @@
-{
-  "world_name": "the office",
-  "maze_width": 30,
-  "maze_height": 20,
-  "sq_tile_size": 32,
-  "special_constraint": ""
-}

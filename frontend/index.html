@@ -95,7 +95,7 @@
         font-size: 14px;
         margin: 0;
       }
-      .auto-mode-control input[type="checkbox"] {
+      .auto-mode-control input[type='checkbox'] {
         margin: 0;
       }
       .auto-mode-control select {
@@ -134,8 +134,12 @@
         animation: spin 1s linear infinite;
       }
       @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
       }
     </style>
   </head>
@@ -147,10 +151,10 @@
           <button id="next-step-btn">Next Step</button>
           <button id="reset-btn">Reset</button>
         </div>
-        
+
         <div class="auto-mode-control">
           <label>
-            <input type="checkbox" id="auto-mode-checkbox"> Auto Mode
+            <input type="checkbox" id="auto-mode-checkbox" /> Auto Mode
           </label>
           <select id="auto-delay" disabled>
             <option value="1000">1s delay</option>
@@ -160,11 +164,9 @@
             <option value="10000">10s delay</option>
           </select>
         </div>
-        
-        <div class="step-info">
-          Step: <span id="step-counter">0</span>
-        </div>
-        
+
+        <div class="step-info">Step: <span id="step-counter">0</span></div>
+
         <div class="processing-indicator" id="processing-indicator">
           <div class="spinner"></div>
           <span id="processing-text">AI thinking...</span>
@@ -185,14 +187,13 @@
       <div id="status-message">Ready to start simulation</div>
       <div>
         <span id="fps-counter">FPS: --</span>
-        <span style="margin-left: 20px;" id="processing-time"></span>
+        <span style="margin-left: 20px" id="processing-time"></span>
       </div>
     </div>
 
     <!-- Load Phaser -->
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
 
-    <!-- Load our game code -->
     <script src="src/game.js"></script>
   </body>
 </html>

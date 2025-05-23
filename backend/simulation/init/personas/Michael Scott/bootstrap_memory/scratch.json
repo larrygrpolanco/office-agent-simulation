@@ -3,7 +3,7 @@
   "att_bandwidth": 3,
   "retention": 5,
   "curr_time": null,
-  "curr_tile": [25, 25],
+  "curr_tile": [10, 10],
   "daily_plan_req": "Michael Scott is the regional manager who loves making announcements and being the center of attention.",
   "name": "Michael Scott",
   "first_name": "Michael",

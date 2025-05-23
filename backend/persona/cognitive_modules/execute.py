@@ -148,9 +148,16 @@ def execute(persona, maze, personas, plan):
   # Setting up the next immediate step. We stay at our curr_tile if there is
   # no <planned_path> left, but otherwise, we go to the next tile in the path.
   ret = persona.scratch.curr_tile
-  if persona.scratch.planned_path: 
-    ret = persona.scratch.planned_path[0]
-    persona.scratch.planned_path = persona.scratch.planned_path[1:]
+  if persona.scratch.planned_path:
+    next_tile = persona.scratch.planned_path[0]
+    if (0 <= next_tile[0] < maze.get_width()) and (0 <= next_tile[1] < maze.get_height()):
+        ret = next_tile
+        persona.scratch.planned_path = persona.scratch.planned_path[1:]
+    else:
+        # Handle the case where next_tile is out of bounds
+        # For example, stop moving or adjust the path
+        ret = persona.scratch.curr_tile
+
 
   description = f"{persona.scratch.act_description}"
   description += f" @ {persona.scratch.act_address}"
